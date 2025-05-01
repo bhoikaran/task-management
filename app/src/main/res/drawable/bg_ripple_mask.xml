@@ -1,0 +1,34 @@
+<!--
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@android:color/transparent"/>
+
+    <stroke
+        android:width="1dp"
+        android:color="#C94C67" />
+    <corners android:radius="@dimen/margin_six"/>
+</shape>
+-->
+
+
+
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?attr/colorControlHighlight">
+
+    <!-- Ripple shape mask -->
+    <item android:id="@android:id/mask">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/colorPrimary" />
+            <corners android:radius="6dp" />
+        </shape>
+    </item>
+
+    <!-- Button background with border and corners -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+            <stroke android:width="1dp" android:color="@color/colorPrimary" />
+            <corners android:radius="6dp" />
+        </shape>
+    </item>
+</ripple>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="teal_200">#80CBC4</color>
+    <color name="grey600">#757575</color>
+    <color name="grey700">#616161</color>
+    <color name="colorGreyLight">#999999</color>
+    <color name="colorBlue">#034EA2</color>
+
+    <color name="status_pending">#FFA000</color>
+    <color name="status_in_progress">#0288D1</color>
+    <color name="status_completed">#388E3C</color>
+    <color name="status_unknown">#9E9E9E</color>
+    <color name="color_light_black">#222222</color>
+
+    <color name="secondary_text">#625B71</color>
+    <color name="error">#B00020</color>
+
+
+
+
+    <!-- Primary branding colors -->
+    <color name="colorPrimary">#3F51B5</color> <!-- Indigo 500 -->
+    <color name="colorPrimaryVariant">#303F9F</color> <!-- Indigo 700 -->
+    <color name="colorOnPrimary">#FFFFFF</color> <!-- Text/icon on primary -->
+
+    <!-- Secondary accent colors -->
+    <color name="colorSecondary">#FF9800</color> <!-- Orange 500 -->
+    <color name="colorSecondaryVariant">#F57C00</color> <!-- Orange 700 -->
+    <color name="colorOnSecondary">#FFFFFF</color> <!-- Text/icon on secondary -->
+
+    <!-- Backgrounds and surfaces -->
+    <color name="colorBackground">#F5F5F5</color> <!-- Light Gray -->
+    <color name="colorSurface">#FFFFFF</color> <!-- Cards, sheets, modals -->
+
+    <!-- Text colors -->
+    <color name="colorTextPrimary">#212121</color> <!-- Almost black -->
+    <color name="colorTextSecondary">#757575</color> <!-- Medium gray -->
+
+    <!-- Outline / Border colors -->
+    <color name="colorOutline">#DDDDDD</color> <!-- Light gray border -->
+
+    <!-- Hint and Disabled text -->
+    <color name="colorHint">#9E9E9E</color> <!-- Gray for hints -->
+    <color name="colorDisabled">#BDBDBD</color> <!-- Lighter gray for disabled -->
+
+    <!-- Custom spinner background -->
+    <color name="spinnerBackgroundBrown">#A1887F</color> <!-- Brown 300 -->
+
+    <color name="primary">#6750A4</color>
+    <color name="onPrimary">#FFFFFF</color>
+    <color name="surface">#FEF7FF</color>
+    <color name="onSurface">#1C1B1F</color>
+    <color name="outline">#79747E</color>
+    <color name="surfaceVariant">#E7E0EC</color>
+
+
+</resources>

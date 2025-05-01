@@ -1,0 +1,1681 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="currentPosition"
+            type="int" />
+
+        <variable
+            name="isLastItem"
+            type="boolean" />
+
+        <variable
+            name="task"
+            type="com.example.taskmanagement.model.Task" />
+
+        <variable
+            name="user"
+            type="com.example.taskmanagement.model.User" />
+
+        <variable
+            name="handler"
+            type="com.example.taskmanagement.interactors.GeneralItemListener" />
+
+        <variable
+            name="status"
+            type="com.example.taskmanagement.model.Status" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Assigned Person Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text='@{user.name}'
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                    android:textColor="@color/primary"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_status"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                    style="@style/Widget.Material3.Chip.Assist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:text='@{String.valueOf(task.status)}'
+                    app:chipBackgroundColor="@{String.valueOf(task.status).equals(`COMPLETED`) ? @color/status_completed : @color/status_pending}"
+                    app:chipStrokeColor="@android:color/darker_gray"
+                    app:chipStrokeWidth="0.5dp" />
+            </LinearLayout>
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/tv_value_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text='@{task.title}'
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="@android:color/black" />
+
+            <!-- Description -->
+            <TextView
+                android:id="@+id/tv_value_task_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:text='@{task.taskDetail}'
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                android:textColor="@color/secondary_text" />
+
+            <!-- Metadata Grid -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp">
+
+                <!-- Assign Date -->
+                <LinearLayout
+                    android:id="@+id/ll_assign_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.5">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/calendar"
+                        android:layout_marginEnd="4dp"/>
+
+                    <TextView
+                        android:id="@+id/tv_assign_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                        android:textColor="@color/secondary_text"
+                        app:formattedDate='@{task.assignDate}' />
+                </LinearLayout>
+
+                <!-- Completion Date -->
+                <LinearLayout
+                    android:id="@+id/ll_completion_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:visibility='@{task.completionDate != null ? View.VISIBLE : View.GONE}'
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.5">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/complete"
+                        android:layout_marginEnd="4dp"/>
+
+                    <TextView
+                        android:id="@+id/tv_completion_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                        android:textColor="@color/secondary_text"
+                        app:formattedDate='@{task.completionDate}' />
+                </LinearLayout>
+
+                <!-- Remark -->
+                <LinearLayout
+                    android:id="@+id/ll_remark"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="10dp"
+                    android:visibility='@{task.remark != null ? View.VISIBLE : View.GONE}'
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/ll_assign_date">
+
+                    <TextView
+                        android:id="@+id/tv_remark"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text='@{"\uD83D\uDCDD " + task.remark}'
+                    android:visibility='@{task.remark != null ? View.VISIBLE : View.GONE}'
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:textColor="@color/secondary_text"
+                    app:layout_constraintTop_toBottomOf="@id/tv_assign_date"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <!-- Action Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:orientation="horizontal"
+                android:paddingTop="5dp">
+
+
+                <ImageView
+                    android:id="@+id/imageview_edit"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="12dp"
+                    android:onClick="@{(v) -> handler.onItemClick(v, currentPosition, task)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imageview_delete"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_vector_menu_edit" />
+
+                <ImageView
+                    android:id="@+id/imageview_delete"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:onClick="@{(v) -> handler.onItemClick(v, currentPosition, task)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_ico_delete" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>
+
+    <!--
+    <?xml version="1.0" encoding="utf-8"?>
+    <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+        <data>
+            <import type="android.view.View" />
+            <variable name="currentPosition" type="int" />
+            <variable name="isLastItem" type="boolean" />
+            <variable name="task" type="com.example.taskmanagement.model.Task" />
+            <variable name="user" type="com.example.taskmanagement.model.User" />
+            <variable name="handler" type="com.example.taskmanagement.interactor.GeneralItemListener" />
+            <variable name="status" type="com.example.taskmanagement.model.Status" />
+        </data>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
+            app:cardBackgroundColor="@android:color/white">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                &lt;!&ndash; Title &ndash;&gt;
+                <TextView
+                    android:id="@+id/tv_value_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text='@{task.title}'
+                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold" />
+
+                &lt;!&ndash; Description &ndash;&gt;
+                <TextView
+                    android:id="@+id/tv_value_task_detail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text='@{task.taskDetail}'
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="@android:color/black"
+                    android:layout_marginTop="4dp" />
+
+                &lt;!&ndash; Divider &ndash;&gt;
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="12dp"
+                    android:background="@android:color/darker_gray" />
+
+                &lt;!&ndash; Assigned Information &ndash;&gt;
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text='@{"Assigned To: " + user.name}'
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:textColor="@android:color/black" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text='@{"Assign Date: " + task.assignDate}'
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:textColor="@android:color/black" />
+
+                &lt;!&ndash; Completion Date &ndash;&gt;
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text='@{"Completion Date: " + task.completionDate}'
+                    android:layout_marginTop="4dp"
+                    android:visibility='@{task.completionDate != null ? View.VISIBLE : View.GONE}'
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:textColor="@android:color/black" />
+
+                &lt;!&ndash; Remark &ndash;&gt;
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text='@{"Remark: " + task.remark}'
+                    android:layout_marginTop="4dp"
+                    android:visibility='@{task.remark != null ? View.VISIBLE : View.GONE}'
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:textColor="@android:color/black" />
+
+                &lt;!&ndash; Bottom Row with Status and Actions &ndash;&gt;
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp">
+
+                    &lt;!&ndash; Status Chip &ndash;&gt;
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text='@{String.valueOf(task.status)}'
+                        app:chipBackgroundColor="@{String.valueOf(task.status).equals(`COMPLETED`) ? @color/status_completed : @color/status_pending}"
+                        style="@style/Widget.Material3.Chip.Assist"
+                        app:chipStrokeColor="@android:color/darker_gray"
+                        app:chipStrokeWidth="0.5dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                    <ImageView
+                        android:id="@+id/imageview_edit"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginTop="12dp"
+                        android:onClick="@{(v) -> handler.onItemClick(v, currentPosition, task)}"
+                        app:srcCompat="@drawable/ic_vector_menu_edit"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/imageview_delete"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginEnd="12dp"/>
+
+                    <ImageView
+                        android:id="@+id/imageview_delete"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginTop="12dp"
+                        android:onClick="@{(v) -> handler.onItemClick(v, currentPosition, task)}"
+                        app:srcCompat="@drawable/ic_ico_delete"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </layout>
+
+    -->
+
+
+    <!--
+    <?xml version="1.0" encoding="utf-8"?>
+    <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+        <data>
+            <import type="android.view.View" />
+            <variable name="currentPosition" type="int" />
+            <variable name="isLastItem" type="boolean" />
+            <variable name="task" type="com.example.taskmanagement.model.Task" />
+            <variable name="user" type="com.example.taskmanagement.model.User" />
+            <variable name="handler" type="com.example.taskmanagement.interactor.GeneralItemListener" />
+            <variable name="status" type="com.example.taskmanagement.model.Status" />
+        </data>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
+            app:cardBackgroundColor="@android:color/white">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                &lt;!&ndash; Title &ndash;&gt;
+                <TextView
+                    android:id="@+id/tv_value_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text='@{task.title}'
+                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold" />
+
+                &lt;!&ndash; Description &ndash;&gt;
+                <TextView
+                    android:id="@+id/tv_value_task_detail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text='@{task.taskDetail}'
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="@android:color/black"
+                    android:layout_marginTop="4dp" />
+
+                &lt;!&ndash; Divider &ndash;&gt;
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="12dp"
+                    android:background="@android:color/darker_gray" />
+
+                &lt;!&ndash; Assigned Info &ndash;&gt;
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text='@{"Assigned To: " + user.name}'
+                    android:textColor="@android:color/black"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:formattedDate='@{task.assignDate}'
+                    android:text='@{"Assign Date: " + task.assignDate}'
+                    android:textColor="@android:color/black"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:layout_marginTop="4dp" />
+
+                &lt;!&ndash; Completion Date &ndash;&gt;
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:formattedDate='@{task.completionDate}'
+                    android:text='@{"Completion Date: " + task.completionDate}'
+                    android:visibility='@{task.completionDate != null ? View.VISIBLE : View.GONE}'
+                    android:textColor="@android:color/black"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:layout_marginTop="4dp" />
+
+                &lt;!&ndash; Remark &ndash;&gt;
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text='@{"Remark: " + task.remark}'
+                    android:visibility='@{task.remark != null ? View.VISIBLE : View.GONE}'
+                    android:textColor="@android:color/black"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:layout_marginTop="4dp" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    &lt;!&ndash; Status Chip &ndash;&gt;
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        tools:text='Completed'
+                        android:text='@{String.valueOf(task.status)}'
+                        android:layout_marginTop="12dp"
+                        style="@style/Widget.Material3.Chip.Assist"
+                        app:chipBackgroundColor="@{String.valueOf(task.status).equals(`COMPLETED`) ? @color/status_completed : @color/status_pending}"
+                        app:chipStrokeColor="@android:color/darker_gray"
+                        app:chipStrokeWidth="0.5dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                    <ImageView
+                        android:id="@+id/imageview_edit"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginTop="12dp"
+                        android:onClick="@{(v) -> handler.onItemClick(v, currentPosition, task)}"
+                        app:srcCompat="@drawable/ic_vector_menu_edit"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/imageview_delete"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginEnd="12dp"/>
+
+                    <ImageView
+                        android:id="@+id/imageview_delete"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginTop="12dp"
+                        android:onClick="@{(v) -> handler.onItemClick(v, currentPosition, task)}"
+                        app:srcCompat="@drawable/ic_ico_delete"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </layout>
+
+
+    -->
+
+
+    <!--
+    <?xml version="1.0" encoding="utf-8"?>
+    <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <data>
+            <import type="android.view.View" />
+            <variable
+                name="currentPosition"
+                type="int" />
+
+            <variable
+                name="isLastItem"
+                type="boolean" />
+            <variable name="task" type="com.example.taskmanagement.model.Task" />
+            <variable name="user" type="com.example.taskmanagement.model.User" />
+            <variable name="handler" type="com.example.taskmanagement.interactor.GeneralItemListener" />
+        </data>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:backgroundTint="@android:color/white"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp">
+
+                &lt;!&ndash; Title Row &ndash;&gt;
+                <TextView
+                    android:id="@+id/tv_label_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/task_title"
+                    android:textColor="@android:color/darker_gray"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.4"/>
+
+                <TextView
+                    android:id="@+id/tv_value_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text='@{task.title}'
+                    android:textColor="@android:color/black"
+                    app:layout_constraintStart_toEndOf="@id/tv_label_title"
+                    app:layout_constraintTop_toTopOf="@id/tv_label_title"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                &lt;!&ndash; Assigned To &ndash;&gt;
+                <TextView
+                    android:id="@+id/tv_label_assigned"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/assigned_to"
+                    android:textColor="@android:color/darker_gray"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toBottomOf="@id/tv_label_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintWidth_percent="0.4"
+                    android:layout_marginTop="8dp"/>
+
+                <TextView
+                    android:id="@+id/tv_value_assigned"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text='@{user.name}'
+                    android:textColor="@android:color/black"
+                    app:layout_constraintStart_toEndOf="@id/tv_label_assigned"
+                    app:layout_constraintTop_toTopOf="@id/tv_label_assigned"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                &lt;!&ndash; Task Details &ndash;&gt;
+                <TextView
+                    android:id="@+id/tv_task_detail"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_description"
+                    android:textColor="@android:color/darker_gray"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toBottomOf="@id/tv_label_assigned"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintWidth_percent="0.4"
+                    android:layout_marginTop="8dp"/>
+
+                <TextView
+                    android:id="@+id/tv_value_task_detail"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text='@{task.taskDetail}'
+                    android:textColor="@android:color/black"
+                    app:layout_constraintStart_toEndOf="@id/tv_task_detail"
+                    app:layout_constraintTop_toTopOf="@id/tv_task_detail"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+
+
+                &lt;!&ndash; Assign Date &ndash;&gt;
+                <TextView
+                    android:id="@+id/tv_label_assign_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/assign_date"
+                    android:textColor="@android:color/darker_gray"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@id/tv_value_task_detail"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintWidth_percent="0.4"/>
+
+                <TextView
+                    android:id="@+id/tv_value_assign_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:formattedDate='@{task.assignDate}'
+                    android:textColor="@android:color/black"
+                    app:layout_constraintStart_toEndOf="@id/tv_label_assign_date"
+                    app:layout_constraintTop_toTopOf="@id/tv_label_assign_date"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                &lt;!&ndash; Completion Date &ndash;&gt;
+                <TextView
+                    android:id="@+id/tv_label_completion_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/completion_date"
+                    android:textColor="@android:color/darker_gray"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"
+                    android:visibility='@{task.completionDate != null ? View.VISIBLE : View.GONE}'
+                    app:layout_constraintTop_toBottomOf="@id/tv_label_assign_date"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintWidth_percent="0.4"/>
+
+                <TextView
+                    android:id="@+id/tv_value_completion_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:formattedDate='@{task.completionDate}'
+                    android:textColor="@android:color/black"
+                    app:layout_constraintStart_toEndOf="@id/tv_label_completion_date"
+                    app:layout_constraintTop_toTopOf="@id/tv_label_completion_date"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                &lt;!&ndash; Remark &ndash;&gt;
+                <TextView
+                    android:id="@+id/tv_label_remark"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/remark"
+                    android:textColor="@android:color/darker_gray"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"
+                    android:visibility='@{task.remark != null ? View.VISIBLE : View.GONE}'
+                    app:layout_constraintTop_toBottomOf="@id/tv_label_completion_date"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintWidth_percent="0.4"/>
+
+                <TextView
+                    android:id="@+id/tv_value_remark"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text='@{task.remark}'
+                    android:textColor="@android:color/black"
+                    android:visibility='@{task.remark != null ? View.VISIBLE : View.GONE}'
+                    app:layout_constraintStart_toEndOf="@id/tv_label_remark"
+                    app:layout_constraintTop_toTopOf="@id/tv_label_remark"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                &lt;!&ndash; Status &ndash;&gt;
+                <TextView
+                    android:id="@+id/tv_label_status"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/status"
+                    android:textColor="@android:color/darker_gray"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@id/tv_value_remark"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintWidth_percent="0.4"/>
+
+                <TextView
+                    android:id="@+id/tv_value_status"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text='@{String.valueOf(task.status)}'
+                    android:textColor="@android:color/black"
+                    app:layout_constraintStart_toEndOf="@id/tv_label_status"
+                    app:layout_constraintTop_toTopOf="@id/tv_label_status"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                &lt;!&ndash; Action Icons &ndash;&gt;
+                <ImageView
+                    android:id="@+id/imageview_edit"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="12dp"
+                    android:onClick="@{(v) -> handler.onItemClick(v, currentPosition, task)}"
+                    app:srcCompat="@drawable/ic_vector_menu_edit"
+                    app:layout_constraintTop_toBottomOf="@id/tv_label_status"
+                    app:layout_constraintEnd_toStartOf="@+id/imageview_delete"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginEnd="12dp"/>
+
+                <ImageView
+                    android:id="@+id/imageview_delete"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="12dp"
+                    android:onClick="@{(v) -> handler.onItemClick(v, currentPosition, task)}"
+                    app:srcCompat="@drawable/ic_ico_delete"
+                    app:layout_constraintTop_toBottomOf="@id/tv_label_status"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+    </layout>
+
+
+    -->
+
+
+    <!--
+    <?xml version="1.0" encoding="utf-8"?>
+    <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <data>
+            <import type="android.view.View" />
+            <variable
+                name="currentPosition"
+                type="int" />
+
+            <variable
+                name="isLastItem"
+                type="boolean" />
+            <variable name="task" type="com.example.taskmanagement.model.Task" />
+            <variable name="user" type="com.example.taskmanagement.model.User" />
+            <variable name="handler" type="com.example.taskmanagement.interactor.GeneralItemListener" />
+        </data>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:backgroundTint="@android:color/white"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/tv_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text='@{task.title}'
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="@android:color/black"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_assigned_to"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text='@{"Assigned to: " + user.name}'
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp"
+                    app:layout_constraintTop_toBottomOf="@id/tv_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="8dp" />
+
+              &lt;!&ndash;  <TextView
+                    android:id="@+id/tv_description"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text='@{"c: " + task.taskDetail}'
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp"
+                    app:layout_constraintTop_toBottomOf="@id/tv_assigned_to"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="8dp" />&ndash;&gt;
+
+                <TextView
+                    android:id="@+id/tv_label_detail"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Description"
+                    android:textColor="@android:color/darker_gray"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@id/tv_assigned_to"
+                    app:layout_constraintStart_toStartOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/tv_value_detail"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text='@{task.taskDetail}'
+                    android:textColor="@android:color/black"
+                    android:layout_marginStart="10dp"
+                    app:layout_constraintStart_toEndOf="@id/tv_label_detail"
+                    app:layout_constraintTop_toTopOf="@id/tv_label_detail"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+
+
+
+                &lt;!&ndash;  <TextView
+                      android:id="@+id/tv_assign_date"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:text='@{"Assign Date: " + task.assignDate}'
+                      android:textColor="@android:color/black"
+                      android:textSize="14sp"
+                      app:layout_constraintTop_toBottomOf="@id/tv_description"
+                      app:layout_constraintStart_toStartOf="parent"
+                      app:layout_constraintEnd_toEndOf="parent"
+                      android:layout_marginTop="8dp" />
+      &ndash;&gt;
+                <TextView
+                    android:id="@+id/tv_label_assign_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Assign Date:"
+                    android:textColor="@android:color/darker_gray"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@id/tv_value_detail"
+                    app:layout_constraintStart_toStartOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/tv_value_assign_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:formattedDate='@{task.assignDate}'
+                    android:textColor="@android:color/black"
+                    android:layout_marginStart="10dp"
+                    app:layout_constraintStart_toEndOf="@id/tv_label_assign_date"
+                    app:layout_constraintTop_toTopOf="@id/tv_label_assign_date"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+
+
+
+              &lt;!&ndash;  <TextView
+                    android:id="@+id/tv_completion_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text='@{"Completion Date: " + task.completionDate}'
+                    app:formattedDate='@{task.assignDate}'
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp"
+                    app:layout_constraintTop_toBottomOf="@id/tv_assign_date"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="8dp" />&ndash;&gt;
+
+                <TextView
+                    android:id="@+id/tv_label_completion_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Completion Date:"
+                    android:textColor="@android:color/darker_gray"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@id/tv_label_assign_date"
+                    app:layout_constraintStart_toStartOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/tv_value_completion_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:formattedDate='@{task.completionDate}'
+                    android:textColor="@android:color/black"
+                    android:layout_marginStart="10dp"
+                    app:layout_constraintStart_toEndOf="@id/tv_label_completion_date"
+                    app:layout_constraintTop_toTopOf="@id/tv_label_completion_date"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+
+
+
+
+                <TextView
+                    android:id="@+id/tv_remark"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text='@{"Remark: " + task.remark}'
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp"
+                    android:visibility='@{task.remark != null ? View.VISIBLE : View.GONE}'
+                    app:layout_constraintTop_toBottomOf="@id/tv_label_completion_date"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="8dp" />
+
+                <TextView
+                    android:id="@+id/tv_status"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text='@{"Status: " + task.status}'
+                    android:textColor="@android:color/holo_green_dark"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    app:statusColor='@{task.status}'
+                    app:layout_constraintTop_toBottomOf="@id/tv_remark"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+    </layout>
+
+    -->
+
+
+    <!--
+    <?xml version="1.0" encoding="utf-8"?>
+    <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <data>
+
+            <import type="android.view.View" />
+
+            <import type="android.text.TextUtils" />
+
+            <variable
+                name="task"
+                type="com.example.taskmanagement.model.Task" />
+            <variable
+                name="user"
+                type="com.example.taskmanagement.model.User" />
+            <variable
+                name="currentPosition"
+                type="int" />
+            <variable
+                name="isLastItem"
+                type="boolean" />
+            <variable
+                name="handler"
+                type="com.example.taskmanagement.interactor.GeneralItemListener" />
+        </data>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:backgroundTint="@android:color/white"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="12dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp">
+
+                &lt;!&ndash; Title Row &ndash;&gt;
+                <TextView
+                    android:id="@+id/tv_label_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Task Title:"
+                    android:textColor="@android:color/darker_gray"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.4"/>
+
+                <TextView
+                    android:id="@+id/tv_value_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text='@{task.title}'
+                    android:textColor="@android:color/black"
+                    app:layout_constraintStart_toEndOf="@id/tv_label_title"
+                    app:layout_constraintTop_toTopOf="@id/tv_label_title"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                &lt;!&ndash; Assigned To &ndash;&gt;
+                <TextView
+                    android:id="@+id/tv_label_assigned"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Assigned To:"
+                    android:textColor="@android:color/darker_gray"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toBottomOf="@id/tv_label_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintWidth_percent="0.4"
+                    android:layout_marginTop="8dp"/>
+
+                <TextView
+                    android:id="@+id/tv_value_assigned"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text='@{user.name}'
+                    android:textColor="@android:color/black"
+                    app:layout_constraintStart_toEndOf="@id/tv_label_assigned"
+                    app:layout_constraintTop_toTopOf="@id/tv_label_assigned"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                &lt;!&ndash; Task Details &ndash;&gt;
+                <TextView
+                    android:id="@+id/tv_task_detail"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Description :"
+                    android:textColor="@android:color/darker_gray"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toBottomOf="@id/tv_label_assigned"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintWidth_percent="0.4"
+                    android:layout_marginTop="8dp"/>
+
+                <TextView
+                    android:id="@+id/tv_value_task_detail"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text='@{task.taskDetail}'
+                    android:textColor="@android:color/black"
+                    app:layout_constraintStart_toEndOf="@id/tv_task_detail"
+                    app:layout_constraintTop_toTopOf="@id/tv_task_detail"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+
+
+                &lt;!&ndash; Assign Date &ndash;&gt;
+                <TextView
+                    android:id="@+id/tv_label_assign_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Assign Date:"
+                    android:textColor="@android:color/darker_gray"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@id/tv_task_detail"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintWidth_percent="0.4"/>
+
+                <TextView
+                    android:id="@+id/tv_value_assign_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:formattedDate='@{task.assignDate}'
+                    android:textColor="@android:color/black"
+                    app:layout_constraintStart_toEndOf="@id/tv_label_assign_date"
+                    app:layout_constraintTop_toTopOf="@id/tv_label_assign_date"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                &lt;!&ndash; Completion Date &ndash;&gt;
+                <TextView
+                    android:id="@+id/tv_label_completion_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Completion Date:"
+                    android:textColor="@android:color/darker_gray"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@id/tv_label_assign_date"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintWidth_percent="0.4"/>
+
+                <TextView
+                    android:id="@+id/tv_value_completion_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:formattedDate='@{task.completionDate}'
+                    android:textColor="@android:color/black"
+                    app:layout_constraintStart_toEndOf="@id/tv_label_completion_date"
+                    app:layout_constraintTop_toTopOf="@id/tv_label_completion_date"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                &lt;!&ndash; Remark &ndash;&gt;
+                <TextView
+                    android:id="@+id/tv_label_remark"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Remark:"
+                    android:textColor="@android:color/darker_gray"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"
+                    android:visibility='@{task.remark != null ? View.VISIBLE : View.GONE}'
+                    app:layout_constraintTop_toBottomOf="@id/tv_label_completion_date"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintWidth_percent="0.4"/>
+
+                <TextView
+                    android:id="@+id/tv_value_remark"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text='@{task.remark}'
+                    android:textColor="@android:color/black"
+                    android:visibility='@{task.remark != null ? View.VISIBLE : View.GONE}'
+                    app:layout_constraintStart_toEndOf="@id/tv_label_remark"
+                    app:layout_constraintTop_toTopOf="@id/tv_label_remark"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                &lt;!&ndash; Status &ndash;&gt;
+                <TextView
+                    android:id="@+id/tv_label_status"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Status:"
+                    android:textColor="@android:color/darker_gray"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@id/tv_label_remark"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintWidth_percent="0.4"/>
+
+                <TextView
+                    android:id="@+id/tv_value_status"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text='@{String.valueOf(task.status)}'
+                    android:textColor="@android:color/black"
+                    app:layout_constraintStart_toEndOf="@id/tv_label_status"
+                    app:layout_constraintTop_toTopOf="@id/tv_label_status"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                &lt;!&ndash; Action Icons &ndash;&gt;
+                <ImageView
+                    android:id="@+id/imageview_edit"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="12dp"
+                    android:onClick="@{(v) -> handler.onItemClick(v, currentPosition, task)}"
+                    app:srcCompat="@drawable/ic_vector_menu_edit"
+                    app:layout_constraintTop_toBottomOf="@id/tv_label_status"
+                    app:layout_constraintEnd_toStartOf="@+id/imageview_delete"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginEnd="12dp"/>
+
+                <ImageView
+                    android:id="@+id/imageview_delete"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="12dp"
+                    android:onClick="@{(v) -> handler.onItemClick(v, currentPosition, task)}"
+                    app:srcCompat="@drawable/ic_ico_delete"
+                    app:layout_constraintTop_toBottomOf="@id/tv_label_status"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+    </layout>
+
+    -->
+
+
+    <!--
+    <?xml version="1.0" encoding="utf-8"?>
+    <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <data>
+
+            <variable
+                name="task"
+                type="com.example.taskmanagement.model.Task" />
+
+            <variable
+                name="user"
+                type="com.example.taskmanagement.model.User" />
+
+            <import type="android.view.View" />
+
+            <import type="android.text.TextUtils" />
+
+            <variable
+                name="currentPosition"
+                type="int" />
+
+            <variable
+                name="isLastItem"
+                type="boolean" />
+
+            <variable
+                name="handler"
+                type="com.example.taskmanagement.interactor.GeneralItemListener" />
+        </data>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/lay_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:orientation="vertical"
+                android:padding="5dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                &lt;!&ndash; Task Title Row &ndash;&gt;
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:weightSum="5">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="Task Title:" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text='@{task.title}'
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                &lt;!&ndash; Assigned To &ndash;&gt;
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:weightSum="5">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="Assigned To:" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text='@{user.name}'
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                &lt;!&ndash; Assign Date &ndash;&gt;
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:weightSum="5">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="Assign Date:" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        app:formattedDate='@{task.assignDate}'
+                       />
+                </LinearLayout>
+
+                &lt;!&ndash; Completion Date &ndash;&gt;
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:weightSum="5">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="Completion Date:" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        app:formattedDate='@{task.completionDate}'
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                &lt;!&ndash; Remark &ndash;&gt;
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:visibility='@{task.remark != null ? View.VISIBLE : View.GONE}'
+                    android:weightSum="5">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="Remark:" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text='@{task.remark}'
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                &lt;!&ndash; Status &ndash;&gt;
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:weightSum="5">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="Status:" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text='@{String.valueOf(task.status)}'
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+            <ImageView
+                android:id="@+id/imageview_nationality_delete"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="16dp"
+                android:onClick="@{(v) -> handler.onItemClick(v, currentPosition, task)}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lay_detail"
+                app:srcCompat="@drawable/ic_ico_delete" />
+
+            <ImageView
+                android:id="@+id/imageview_nationality_edit"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="16dp"
+                android:onClick="@{(v) -> handler.onItemClick(v, currentPosition, task)}"
+                app:layout_constraintEnd_toStartOf="@+id/imageview_nationality_delete"
+                app:layout_constraintTop_toBottomOf="@+id/lay_detail"
+                app:srcCompat="@drawable/ic_vector_menu_edit" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </layout>
+    -->
+
+    <!--
+
+    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        card_view:cardElevation="4dp"
+        card_view:cardCornerRadius="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp">
+
+            &lt;!&ndash; Index &ndash;&gt;
+            <TextView
+                android:id="@+id/tvIndex"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                tools:text="1"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            &lt;!&ndash; Detail &ndash;&gt;
+            <TextView
+                android:id="@+id/tvDetail"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                tools:text="Complete UI for task page"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            &lt;!&ndash; Assign Person &ndash;&gt;
+            <TextView
+                android:id="@+id/tvAssignPerson"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                tools:text="Karan"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            &lt;!&ndash; Assign Date &ndash;&gt;
+            <TextView
+                android:id="@+id/tvAssignDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                tools:text="2025-04-22"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            &lt;!&ndash; Completion Date &ndash;&gt;
+            <TextView
+                android:id="@+id/tvCompletionDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                tools:text="2025-04-25"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            &lt;!&ndash; Remark &ndash;&gt;
+            <TextView
+                android:id="@+id/tvRemark"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                tools:text="Pending review"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    -->
+
+
+    <!--
+    <androidx.cardview.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:cardElevation="6dp"
+        app:cardCornerRadius="12dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            &lt;!&ndash; Task Title &ndash;&gt;
+            <TextView
+                android:id="@+id/tvTaskDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Task Title"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:maxLines="2"
+                android:ellipsize="end"/>
+
+            &lt;!&ndash; Status and Assigned User &ndash;&gt;
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/tvStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/teal_200"
+                    android:background="@drawable/status_bg"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="4dp"
+                    tools:text="PENDING"
+                    android:textAllCaps="true"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tvAssignedTo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    tools:text="Assigned to: John"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp"/>
+            </LinearLayout>
+
+            &lt;!&ndash; Dates Row &ndash;&gt;
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/tvAssignDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableStart="@drawable/ic_calendar"
+                    android:drawablePadding="6dp"
+                    tools:text="12 Mar 2025"
+                    android:textSize="13sp"
+                    android:textColor="@android:color/black"/>
+
+                <TextView
+                    android:id="@+id/tvCompletionDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableStart="@drawable/ic_check_circle"
+                    android:drawablePadding="6dp"
+                    tools:text="15 Mar 2025"
+                    android:textSize="13sp"
+                    android:textColor="@android:color/black"
+                    android:gravity="end"/>
+            </LinearLayout>
+
+            &lt;!&ndash; Remark &ndash;&gt;
+            <TextView
+                android:id="@+id/tvRemark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                tools:text="Remark: Task needs to be reviewed."
+                android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:maxLines="2"
+                android:ellipsize="end"/>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+    -->
+
+
+    <!--
+    <?xml version="1.0" encoding="utf-8"?>
+    <androidx.cardview.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvTaskDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:id="@+id/tvStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp"
+                    android:textAllCaps="true"
+                    android:textSize="12sp"/>
+
+                <TextView
+                    android:id="@+id/tvAssignedTo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:textColor="@color/grey600"
+                    android:textSize="14sp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:id="@+id/tvAssignDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="12sp"
+                    android:drawableStart="@drawable/ic_calendar"
+                    android:drawablePadding="4dp"/>
+
+                <TextView
+                    android:id="@+id/tvCompletionDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="12sp"
+                    android:drawableStart="@drawable/ic_check_circle"
+                    android:drawablePadding="4dp"
+                    android:gravity="end"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvRemark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="14sp"
+                android:textColor="@color/grey700"/>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+    -->

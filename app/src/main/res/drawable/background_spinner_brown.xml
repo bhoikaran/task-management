@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:autoMirrored="true">
+
+    <item
+        android:bottom="0dp"
+        android:start="-8dp"
+        android:end="-8dp"
+        android:top="-8dp">
+
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+            <stroke
+                android:width="1.5dp"
+                android:color="@color/colorGreyLight" />
+        </shape>
+
+
+    </item>
+
+    <item
+        android:bottom="8dp"
+        android:drawable="@drawable/down_arrow"
+        android:gravity="center_vertical|end"
+        android:start="8dp"
+        android:top="8dp"
+        tools:ignore="UnusedAttribute">
+
+
+        <!--        <bitmap-->
+        <!--             android:gravity="center_vertical|end"-->
+        <!--            android:src="@drawable/img_arrow_down"-->
+        <!--            android:tint="@color/color_orange"/>-->
+    </item>
+
+
+</layer-list>
