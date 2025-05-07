@@ -1,39 +1,36 @@
 package com.example.taskmanagement
 
 
-import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
+import android.text.TextUtils
+import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.taskmanagement.adapter.TaskAdapter
-import com.example.taskmanagement.databinding.ActivityMainBinding
+import com.example.taskmanagement.databinding.ActivityAdminMainBinding
 import com.example.taskmanagement.interactors.GeneralItemListener
 import com.example.taskmanagement.interactors.GeneralListener
 import com.example.taskmanagement.model.Status
 import com.example.taskmanagement.model.TaskModel
-import com.example.taskmanagement.model.UserModel
 import com.example.taskmanagement.repository.FirestoreTaskRepository
 import com.example.taskmanagement.utils.ExportToExcel
-import com.example.taskmanagement.utils.Utils
+import com.example.taskmanagement.utils.utility.UtilPreference
 import com.example.taskmanagement.viewmodel.AdminViewModel
-import com.example.taskmanagement.viewmodel.TaskViewModel
 import com.example.taskmanagement.viewmodel.TaskViewModelFactory
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 
 class AdminMainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityAdminMainBinding
     private lateinit var viewModel: AdminViewModel
-    private lateinit var adapter: TaskAdapter
-
+    private lateinit var adapterTask: TaskAdapter
+    private lateinit var mSharePreference: UtilPreference
     private var userIds: List<String?> = listOf()
     private var workbook: XSSFWorkbook? = null
     private lateinit var pendingIntent: Intent
@@ -49,11 +46,10 @@ class AdminMainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_admin_main)
+        mSharePreference = UtilPreference(this)
         val repo = FirestoreTaskRepository()
-        viewModel = ViewModelProvider(this, TaskViewModelFactory(repo))
-            .get(AdminViewModel::class.java)
+        viewModel = ViewModelProvider(this, TaskViewModelFactory(repo))[AdminViewModel::class.java]
 
         binding.viewModel = viewModel
         binding.generalListener = generalListener
@@ -63,10 +59,12 @@ class AdminMainActivity : AppCompatActivity() {
         observeData()
     }
 
+
     private fun setupRecycler() {
-        adapter = TaskAdapter(emptyList(), itemListener)
+        adapterTask = TaskAdapter(emptyList(), itemListener)
+        adapterTask.isAdmin = true
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.adapter = adapter
+        binding.recyclerView.adapter = adapterTask
     }
 
     private fun setupFilters() {
@@ -91,19 +89,30 @@ class AdminMainActivity : AppCompatActivity() {
 
     private fun observeData() {
         viewModel.filteredTasks.observe(this) { tasks ->
-            adapter.submitList(tasks)
+//            adapter.submitList(tasks)
+            Log.d("filteredTasks", "filteredTasks : $tasks")
+            adapterTask.tasks = tasks
+        }
+        viewModel.allUsers.observe(this) { users ->
+            Log.d("allUsers", "allUsers : $users")
+            adapterTask.users = users
         }
     }
 
     override fun onResume() {
         super.onResume()
+        if (TextUtils.isEmpty(mSharePreference.getString(R.string.prefUserId))){
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
         viewModel.applyFilters(null, null)
     }
 
     private val generalListener = GeneralListener { view ->
         when (view?.id) {
             R.id.fabAddTask -> startActivity(
-                Intent(this, NewTaskActivity::class.java)
+                Intent(this, AdminNewTaskActivity::class.java)
             )
             R.id.btnApplyFilters -> {
                 val uPos = binding.spinnerUser.selectedItemPosition
@@ -152,7 +161,7 @@ class AdminMainActivity : AppCompatActivity() {
         if (item is TaskModel) {
             when (view.id) {
                 R.id.imageview_delete -> viewModel.deleteTask(item)
-                R.id.imageview_edit -> Intent(this, NewTaskActivity::class.java).also {
+                R.id.imageview_edit -> Intent(this, AdminNewTaskActivity::class.java).also {
                     it.putExtra("task_id", item.id)
                     startActivity(it)
                 }

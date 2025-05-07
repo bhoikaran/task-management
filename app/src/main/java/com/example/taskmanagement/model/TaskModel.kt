@@ -11,6 +11,7 @@ data class TaskModel(
     val assignDate: Long = 0L,
     val completionDate: Long? = null,
     val remark: String? = null,
-    val status: String = "IN_PROGRESS",
+    val userRemark: String? = null,
+    val status: Status = Status.IN_PROGRESS,
     val createdBy: String = ""
 )

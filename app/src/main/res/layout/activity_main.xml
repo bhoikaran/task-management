@@ -9,7 +9,7 @@
 
         <variable
             name="viewModel"
-            type="com.example.taskmanagement.viewmodel.AdminViewModel" />
+            type="com.example.taskmanagement.viewmodel.TaskViewModel" />
 
         <variable
             name="onClickNavHeader"

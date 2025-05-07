@@ -38,33 +38,6 @@ class NewTaskActivity : AppCompatActivity() {
     private var assignDateInMillis: Long = 0L
     private var completionDateInMillis: Long = 0L
 
-    /* override fun onCreate(savedInstanceState: Bundle?) {
-         super.onCreate(savedInstanceState)
-
-         setContentView(binding.root)
-
-         viewModel = ViewModelProvider(this)[TaskViewModel::class.java]
-         binding = DataBindingUtil.setContentView(this, com.example.taskmanagement.R.layout.activity_new_task)
-         setupUserSpinner()
-         setupDatePicker()
-         setupSaveButton()
-     }*/
-
-    /*override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(com.example.taskmanagement.R.layout.activity_new_task)
-
-        // Initialize ViewModel and RecyclerView
-        viewModel = ViewModelProvider(this)[TaskViewModel::class.java]
-        binding = DataBindingUtil.setContentView(
-            this,
-            com.example.taskmanagement.R.layout.activity_new_task
-        )
-        setupUserSpinner()
-        setupDatePicker()
-        setupSaveButton()
-    }*/
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,25 +64,6 @@ class NewTaskActivity : AppCompatActivity() {
             }
         }
     }
-
-    /*  private fun populateTaskDetails(task: Task) {
-          binding.etTitle.setText(task.title)
-          binding.etDescription.setText(task.taskDetail)
-
-          selectedDate = task.assignDate
-          binding.tvPickDate.text = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(selectedDate))
-
-          // Assign user in spinner when loaded
-          viewModel.allUsers.observe(this) { users ->
-              val index = users.indexOfFirst { it.id == task.assignPersonId }
-              if (index != -1) {
-                  binding.spinnerUser.setSelection(index + 1) // +1 because of "Select User"
-              }
-          }
-
-          selectedUserId = task.assignPersonId
-      }
-  */
 
     override fun onResume() {
         super.onResume()
@@ -175,7 +129,6 @@ class NewTaskActivity : AppCompatActivity() {
         if (completeDate != 0L) {
             binding.tvPickCompleteDate.setText( formatDate(completeDate!!))
         }
-        Log.d("spinnerStatus", " spinnerStatus: ${getStatusIndex(task.status)}")
         // Status (assuming a spinner or a radio group)
         binding.spinnerStatus.setSelection(getStatusIndex(task.status))
 
@@ -208,50 +161,12 @@ class NewTaskActivity : AppCompatActivity() {
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.spinnerUser.adapter = adapter
 
-            /* binding.spinnerUser.onItemSelectedListener =
-                 object : AdapterView.OnItemSelectedListener {
-                     override fun onItemSelected(
-                         parent: AdapterView<*>,
-                         view: View?,
-                         position: Int,
-                         id: Long
-                     ) {
-                         selectedUserId = users[position].id
-                     }
 
-                     override fun onNothingSelected(parent: AdapterView<*>?) {
-                         selectedUserId = null
-                     }
-                 }*/
-
-
-            //
 
 
         }
     }
-
     private fun setupDatePicker() {
-        /*    binding.tvPickDate.setOnClickListener {
-                val calendar = Calendar.getInstance()
-                val datePicker = DatePickerDialog(
-                    this,
-                    { _, year, month, dayOfMonth ->
-                        calendar.set(year, month, dayOfMonth)
-                        selectedDate = calendar.timeInMillis
-                        binding.tvPickDate.text =
-                            SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(
-                                Date(selectedDate)
-                            )
-                    },
-                    calendar.get(Calendar.YEAR),
-                    calendar.get(Calendar.MONTH),
-                    calendar.get(Calendar.DAY_OF_MONTH)
-                )
-                datePicker.show()
-            }*/
-
-
         binding.tvAssignDate.setOnClickListener {
             Utils().openDatePicker(this) { selectedMillis, formattedDate ->
                 completionDateInMillis = selectedMillis
@@ -272,53 +187,6 @@ class NewTaskActivity : AppCompatActivity() {
         }
 
     }
-
- /*   private fun setupSaveButton() {
-        binding.btnSave.setOnClickListener {
-            val title = binding.etTitle.text.toString().trim()
-            val desc = binding.etDescription.text.toString().trim()
-            val remarks = binding.etRemark.text.toString().trim()
-
-
-            if (title.isEmpty()) {
-                Toast.makeText(this, "Add Title", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            } else if (desc.isEmpty()) {
-                return@setOnClickListener
-            } else if (selectedUserId == null || selectedUserId == 0) {
-                return@setOnClickListener
-            }
-
-            if (viewModel.editMode.get()) {
-                val editTask = Task(
-                    id = taskId!!,
-                    title = title,
-                    taskDetail = desc,
-                    assignPersonId = selectedUserId!!,
-                    assignDate = selectedDate,
-                    completionDate = if(completeDate?.equals(null) == true) null else completeDate,
-                    remark = if(TextUtils.isEmpty(remarks)) null else remarks,
-                    status = selectedStatus
-                )
-
-                viewModel.updateTask(editTask)
-            } else {
-                val newTask = Task(
-                    title = title,
-                    taskDetail = desc,
-                    assignPersonId = selectedUserId!!,
-                    assignDate = selectedDate,
-                    completionDate = null,
-                    remark = null,
-                    status = selectedStatus
-                )
-
-                viewModel.addTask(newTask)
-            }
-
-            finish()
-        }
-    }*/
 
 
     private fun setupSaveButton() {
@@ -366,7 +234,8 @@ class NewTaskActivity : AppCompatActivity() {
         return when (status) {
 
             Status.IN_PROGRESS -> 0
-            Status.COMPLETED -> 1
+            Status.VERIFIED_DONE -> 1
+            Status.MARKED_DONE -> 2
         }
 
     }

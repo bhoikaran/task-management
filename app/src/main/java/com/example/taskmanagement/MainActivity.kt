@@ -108,10 +108,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun observeData() {
         viewModel.filteredTasks.observe(this) { tasks ->
-            adapter.tasks = tasks
+//            adapter.tasks = tasks
         }
         viewModel.allUsers.observe(this) { users ->
-            adapter.users = users
+//            adapter.users = users
         }
     }
 
@@ -129,7 +129,7 @@ class MainActivity : AppCompatActivity() {
                 val selectedStatus = when (mBinding.spinnerStatus.selectedItemPosition) {
 
                     1 -> Status.IN_PROGRESS.toString()
-                    2 -> Status.COMPLETED.toString()
+                    2 -> Status.VERIFIED_DONE.toString()
                     else -> null // "All"
                 }
 

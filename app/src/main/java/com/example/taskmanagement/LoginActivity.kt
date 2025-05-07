@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.example.taskmanagement.databinding.ActivityLoginBinding
 import com.example.taskmanagement.interactors.GeneralListener
+import com.example.taskmanagement.model.User
 import com.example.taskmanagement.utils.utility.UtilPreference
 import com.example.taskmanagement.repository.AuthRepository
 import com.example.taskmanagement.viewmodel.LoginViewModel
@@ -34,7 +35,13 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        initState()
         observeData()
+    }
+
+    private fun initState() {
+      /* binding.emailInput.setText(mSharePreference.getString(R.string.prefEmail));
+       binding.passwordInput.setText(mSharePreference.getString(R.string.prefPassword));*/
     }
 
     private fun observeData() {
@@ -53,20 +60,20 @@ class LoginActivity : AppCompatActivity() {
                     R.string.prefUserRole,
                     user.role
                 )
-              /*  when (user.role) {
-                    "admin" -> startActivity(Intent(this, MainActivity::class.java))
-                    "general" -> startActivity(Intent(this, MainActivity::class.java))
-                }*/
+                when (user.role) {
+                    "admin" -> startActivity(Intent(this, AdminMainActivity::class.java))
+                    "general" -> startActivity(Intent(this, UserMainActivity::class.java))
+                }
 
                   when (user.role) {
-                   "admin" -> Toast.makeText(this, "User : Admin", Toast.LENGTH_SHORT).show()
-                   "general" -> Toast.makeText(this, "User : General", Toast.LENGTH_SHORT).show()
+                   "admin" -> Toast.makeText(this, "User : Admin", Toast.LENGTH_LONG).show()
+                   "general" -> Toast.makeText(this, "User : General", Toast.LENGTH_LONG).show()
                }
-                startActivity(Intent(this, MainActivity::class.java))
+//                startActivity(Intent(this, AdminMainActivity::class.java))
                 finish()
             }
             result.onFailure {
-                Toast.makeText(this, "Login Failed: ${it.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Login Failed: ${it.message}", Toast.LENGTH_LONG).show()
                 Log.d("Login", "Login Failed: ${it.message}")
             }
         }

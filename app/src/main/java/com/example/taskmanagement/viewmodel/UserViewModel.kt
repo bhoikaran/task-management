@@ -1,23 +1,23 @@
 package com.example.taskmanagement.viewmodel
 
-
-import android.util.Log
 import androidx.databinding.ObservableInt
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.taskmanagement.model.TaskModel
 import com.example.taskmanagement.model.UserModel
 import com.example.taskmanagement.repository.FirestoreTaskRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class AdminViewModel(
+
+class UserViewModel(
     private val repo: FirestoreTaskRepository
 ) : ViewModel() {
 
-    // Expose Firestore users as LiveData
-    val allUsers: LiveData<List<UserModel>> = repo.getUsersFlow()
-        .asLiveData(Dispatchers.IO)
 
     private val _userFilter = MutableLiveData<String?>(null)
     private val _statusFilter = MutableLiveData<String?>(null)
@@ -25,12 +25,10 @@ class AdminViewModel(
     val filteredTasks: LiveData<List<TaskModel>> =
         MediatorLiveData<List<TaskModel>>().apply {
             fun reload() {
-                Log.d("filteredTasks","filteredTasks+++ : "+filteredTasks.value)
                 viewModelScope.launch(Dispatchers.IO) {
                     repo.getTasksFlow(_userFilter.value, _statusFilter.value)
                         .collect { postValue(it) }
                 }
-                Log.d("filteredTasks","filteredTasks+++ : "+filteredTasks.value)
             }
             addSource(_userFilter)  { reload() }
             addSource(_statusFilter){ reload() }

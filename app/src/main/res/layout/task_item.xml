@@ -9,9 +9,12 @@
         <variable
             name="currentPosition"
             type="int" />
-
+        <import type="com.example.taskmanagement.R"/>
         <variable
             name="isLastItem"
+            type="boolean" />
+        <variable
+            name="isAdmin"
             type="boolean" />
 
         <variable
@@ -60,16 +63,41 @@
                     android:textColor="@color/primary"
                     android:textStyle="bold" />
 
-                <com.google.android.material.chip.Chip
+               <!-- <com.google.android.material.chip.Chip
                     android:id="@+id/chip_status"
                     android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                     style="@style/Widget.Material3.Chip.Assist"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text='@{task.status}'
+                    android:textColor="@color/white"
+                    app:statusText='@{task.status}'
                     app:chipBackgroundColor="@{task.status.equals(`COMPLETED`) ? @color/status_completed : @color/status_pending}"
                     app:chipStrokeColor="@android:color/darker_gray"
-                    app:chipStrokeWidth="0.5dp" />
+                    app:chipStrokeWidth="0.5dp" />-->
+
+
+                <LinearLayout
+                    android:id="@+id/ll_scheduled_sessions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:statusBackGround='@{task.status}'
+                    android:padding="5dp"
+                    tools:background="@drawable/bg_in_progress"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tv_scheduled_sessions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:statusText='@{task.status}'
+                        android:textSize="12sp"
+                        tools:text="@string/status_in_progress"
+                        android:textColor="@color/white"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
             </LinearLayout>
 
             <!-- Title -->
@@ -151,7 +179,7 @@
                         app:formattedDate='@{task.completionDate}' />
                 </LinearLayout>
 
-                <!-- Remark -->
+
                 <LinearLayout
                     android:id="@+id/ll_remark"
                     android:layout_width="match_parent"
@@ -162,14 +190,15 @@
                     android:visibility='@{task.remark != null ? View.VISIBLE : View.GONE}'
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/ll_assign_date">
-
+                  <!--  tools:text='@{"\uD83D\uDCDD " + task.remark}'-->
                     <TextView
                         android:id="@+id/tv_remark"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text='@{"\uD83D\uDCDD " + task.remark}'
                         android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                        android:textColor="@color/secondary_text" />
+                        android:textColor="@color/secondary_text"
+                        app:remarkIconRes="@{R.mipmap.admin_remark}"
+                        app:remarkText="@{task.remark}" />
 
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -188,14 +217,16 @@
                     android:layout_height="20dp"
                     android:layout_marginEnd="12dp"
                     android:onClick="@{(v) -> handler.onItemClick(v, currentPosition, task)}"
-                    app:srcCompat="@drawable/ic_vector_menu_edit" />
+                    app:srcCompat="@mipmap/edit" />
 
                 <ImageView
                     android:id="@+id/imageview_delete"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
+
+                    android:visibility="@{ isAdmin ? View.VISIBLE :View.GONE}"
                     android:onClick="@{(v) -> handler.onItemClick(v, currentPosition, task)}"
-                    app:srcCompat="@drawable/ic_ico_delete" />
+                    app:srcCompat="@mipmap/delete" />
 
             </LinearLayout>
 

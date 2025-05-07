@@ -1,14 +1,17 @@
 package com.example.taskmanagement.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.ObservableBoolean
 import androidx.recyclerview.widget.RecyclerView
 import com.example.taskmanagement.R
 import com.example.taskmanagement.databinding.TaskItemBinding
 import com.example.taskmanagement.interactors.GeneralItemListener
 import com.example.taskmanagement.model.TaskModel
 import com.example.taskmanagement.model.UserModel
+import kotlin.Boolean
 
 /*
 class TaskAdapter(var users: List<User>, generalItemListener: GeneralItemListener) :
@@ -102,7 +105,7 @@ class TaskAdapter(
     var users: List<UserModel>,
     private val generalItemListener: GeneralItemListener
 ) : RecyclerView.Adapter<TaskAdapter.ViewHolder>() {
-
+    var isAdmin = false
     var tasks: List<TaskModel> = emptyList()
         set(value) {
             field = value
@@ -123,6 +126,8 @@ class TaskAdapter(
         val task = tasks[position]
         // find matching UserModel by UID
         val user = users.find { it.uid == task.assignPersonId }
+        Log.d("user", "user : $user")
+        Log.d("task", "task : $task")
         holder.bind(task, user, position, position == itemCount - 1)
     }
 
@@ -138,6 +143,7 @@ class TaskAdapter(
             // these variable names must match those in your task_item.xml <data> block
             binding.task = task
             binding.user = user
+            binding.isAdmin = isAdmin
             binding.currentPosition = position
             binding.isLastItem = isLastItem
             binding.handler = generalItemListener

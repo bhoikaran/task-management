@@ -19,6 +19,7 @@
     <string name="text_delete_item">You Want to Delete Item ?</string>
     <string name="save_task">Save Task</string>
     <string name="save_update">Update Task</string>
+    <string name="cancel">Cancel</string>
     <string name="task_assign_date">Task Assign Date</string>
     <string name="task_completion_date">Task Completion Date</string>
     <string name="task_assigned_to">Task Assigned To</string>
@@ -37,6 +38,9 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="login">LOGIN</string>
+    <string name="status_in_progress">In Progress</string>
+    <string name="status_mark_done">Pending Approval</string>
+    <string name="status_verified_done">Completed</string>
     <string name="prefApplication" translatable="false">prefApplication</string>
     <string name="prefUserId" translatable="false">prefUserId</string>
     <string name="prefUserName" translatable="false">prefUserName</string>
