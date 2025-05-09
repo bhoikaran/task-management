@@ -35,7 +35,7 @@ class UserNewTaskActivity : AppCompatActivity() {
     private lateinit var mSharePreference: UtilPreference
     private var taskId: String? = null
     private var isEdit = false
-
+    private  var taskModel: TaskModel = TaskModel()
     private var selectedAssignDate = System.currentTimeMillis()
     private var selectedCompleteDate: Long? = null
     private var selectedUserId: String? = null
@@ -49,8 +49,7 @@ class UserNewTaskActivity : AppCompatActivity() {
         // setup VM
         val repo = FirestoreTaskRepository()
         viewModel = ViewModelProvider(
-            this,
-            UserTaskViewModelFactory(repo)
+            this, UserTaskViewModelFactory(repo)
         )[UserNewTaskViewModel::class.java]
         binding.viewModel = viewModel
         binding.generalListener = generalListener
@@ -65,6 +64,10 @@ class UserNewTaskActivity : AppCompatActivity() {
             isEdit = true
             viewModel.editMode.set(true)
             viewModel.getTaskById(taskId!!).observe(this) { task ->
+                if (task != null) {
+                    taskModel = task
+                }
+
                 task?.let { populateForEdit(it) }
             }
         }
@@ -85,7 +88,6 @@ class UserNewTaskActivity : AppCompatActivity() {
             }
         }
     }
-
 
 
     private fun populateForEdit(task: TaskModel) {
@@ -123,22 +125,35 @@ class UserNewTaskActivity : AppCompatActivity() {
         SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(ms))
 
 
-
     private val generalListener: GeneralListener = GeneralListener { view ->
         when (view?.id) {
             R.id.btnSave -> {
                 val remark = binding.etRemark.text.toString().trim().takeIf { it.isNotEmpty() }
 
                 if (remark?.isEmpty() == true || selectedCompleteDate == null) {
-                    Toast.makeText(this, "Remark and Complete Date are required", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Remark and Complete Date are required", Toast.LENGTH_LONG)
+                        .show()
                     return@GeneralListener
                 }
 
-                val model = TaskModel(
-                    id = if (isEdit) taskId else null,
+                val model = TaskModel(/* id = if (isEdit) taskId else null,
                     completionDate = selectedCompleteDate,
                     userRemark = remark,
+                    status = Status.MARKED_DONE,*/
+
+
+                    id = if (isEdit) taskId else null,
+                    title = taskModel.title,
+                    taskDetail = taskModel.taskDetail,
+                    assignPersonId = taskModel.assignPersonId,
+                    assignDate = taskModel.assignDate,
+                    completionDate = selectedCompleteDate,
+                    remark = taskModel.remark,
+                    userRemark = remark,
                     status = Status.MARKED_DONE,
+                    createdBy = taskModel.createdBy,
+
+
                 )
                 viewModel.updateTask(model)
                 finish()
@@ -148,3 +163,5 @@ class UserNewTaskActivity : AppCompatActivity() {
     }
 
 }
+
+

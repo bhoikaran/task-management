@@ -5,10 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.taskmanagement.model.TaskModel
-import com.example.taskmanagement.model.UserModel
 import com.example.taskmanagement.repository.FirestoreTaskRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

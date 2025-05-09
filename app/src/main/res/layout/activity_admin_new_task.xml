@@ -158,6 +158,25 @@
                                 android:inputType="textMultiLine" />
                         </com.google.android.material.textfield.TextInputLayout>
 
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/user_remarks"
+                            android:layout_marginBottom="12dp"
+                            android:visibility="@{viewModel.editMode ? View.VISIBLE : View.GONE}">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etUserRemark"
+                                android:layout_width="match_parent"
+                                android:layout_height="120dp"
+                                android:gravity="top"
+                                android:enabled="false"
+                                android:inputType="textMultiLine" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+
                         <!-- Select Status -->
                         <TextView
                             android:layout_width="match_parent"

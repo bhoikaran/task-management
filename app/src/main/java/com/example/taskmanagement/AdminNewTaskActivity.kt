@@ -2,6 +2,7 @@ package com.example.taskmanagement
 
 
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -27,7 +28,7 @@ class AdminNewTaskActivity : AppCompatActivity() {
     private lateinit var mSharePreference: UtilPreference
     private var taskId: String? = null
     private var isEdit = false
-
+    private  var taskModel: TaskModel = TaskModel()
     private var selectedAssignDate = System.currentTimeMillis()
     private var selectedCompleteDate: Long? = null
     private var selectedUserId: String? = null
@@ -54,8 +55,13 @@ class AdminNewTaskActivity : AppCompatActivity() {
         taskId = intent.getStringExtra("task_id")
         if (!taskId.isNullOrEmpty()) {
             isEdit = true
+
             viewModel.editMode.set(true)
             viewModel.getTaskById(taskId!!).observe(this) { task ->
+                if (task != null) {
+                    taskModel = task
+                }
+
                 task?.let { populateForEdit(it) }
             }
         }
@@ -144,6 +150,7 @@ class AdminNewTaskActivity : AppCompatActivity() {
                 assignDate = selectedAssignDate,
                 completionDate = selectedCompleteDate,
                 remark = remark,
+                userRemark = taskModel.userRemark,
                 status = selectedStatus,
                 createdBy = mSharePreference.getString(R.string.prefUserId)
 
@@ -173,10 +180,11 @@ class AdminNewTaskActivity : AppCompatActivity() {
 
         // Remark
         binding.etRemark.setText(task.remark)
+        binding.etUserRemark.setText(task.userRemark)
 
         // Completion Date
-        selectedCompleteDate = task.completionDate ?: 0L
-        if (selectedCompleteDate != 0L) {
+        selectedCompleteDate = task.completionDate
+        if (selectedCompleteDate != null) {
             binding.tvPickCompleteDate.setText(formatDate(selectedCompleteDate!!))
         }
 
@@ -197,6 +205,4 @@ class AdminNewTaskActivity : AppCompatActivity() {
 
     private fun formatDate(ms: Long): String =
         SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(ms))
-
-
 }

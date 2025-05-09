@@ -25,6 +25,7 @@
     <string name="task_assigned_to">Task Assigned To</string>
     <string name="description">Description</string>
     <string name="remarks">Remarks</string>
+    <string name="user_remarks">User Remarks</string>
     <string name="title">Title</string>
     <string name="completion_date">Completion Date:</string>
     <string name="assign_date">Assign Date:</string>
