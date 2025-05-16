@@ -1,6 +1,6 @@
 package com.example.taskmanagement.repository
 
-import com.example.taskmanagement.model.UserModel
+import com.example.taskmanagement.businesslogic.model.UserModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore

@@ -68,7 +68,10 @@ class UtilPreference(context: Context) {
 
     fun clear() {
         mPreferences?.edit() {
-    //            editor.remove(mContext.resources.getString(R.string.prefUserId))
+                remove(mContext.resources.getString(R.string.prefUserId))
+                remove(mContext.resources.getString(R.string.prefUserName))
+                remove(mContext.resources.getString(R.string.prefUserRole))
+
     //            editor.remove(mContext.resources.getString(R.string.prefUserToken))
     //            editor.remove(mContext.resources.getString(R.string.prefUserName))
     //            editor.remove(mContext.resources.getString(R.string.prefFirstName))

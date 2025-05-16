@@ -9,7 +9,7 @@
 
         <variable
             name="viewModel"
-            type="com.example.taskmanagement.viewmodel.AdminViewModel" />
+            type="com.example.taskmanagement.businesslogic.viewmodel.AdminViewModel" />
 
         <variable
             name="onClickNavHeader"
@@ -17,7 +17,7 @@
 
         <variable
             name="generalListener"
-            type="com.example.taskmanagement.interactors.GeneralListener" />
+            type="com.example.taskmanagement.businesslogic.interactors.GeneralListener" />
 
         <variable
             name="onNavigationItemSelectedListener"

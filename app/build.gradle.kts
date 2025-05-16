@@ -135,7 +135,10 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth:22.3.0")
     implementation("com.google.firebase:firebase-firestore:24.10.0")
-
+    implementation("com.github.bumptech.glide:glide:4.14.2") {
+        exclude(group = "androidx.fragment")
+    }
+    kapt("com.github.bumptech.glide:compiler:4.14.2")
 }
 
 // Add this at the bottom of the file

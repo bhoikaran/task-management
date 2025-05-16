@@ -3,13 +3,13 @@ package com.example.taskmanagement.utils
 import android.content.Context
 import android.net.Uri
 import android.widget.Toast
-import com.example.taskmanagement.model.Task
-import com.example.taskmanagement.model.User
+import com.example.taskmanagement.businesslogic.model.TaskModel
+import com.example.taskmanagement.businesslogic.model.UserModel
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 
 class ExportToExcel {
 
-    fun createExcelWorkbook(taskList: List<Task>, users: List<User>): XSSFWorkbook {
+    fun createExcelWorkbook(taskList: List<TaskModel>, users: List<UserModel>): XSSFWorkbook {
         val workbook = XSSFWorkbook()
         val sheet = workbook.createSheet("Tasks")
 
@@ -25,7 +25,7 @@ class ExportToExcel {
 
         for ((i, task) in taskList.withIndex()) {
             val row = sheet.createRow(i + 1)
-            val assignPersonName = users.find { it.id == task.assignPersonId }?.name ?: "Unknown"
+            val assignPersonName = users.find { it.uid == task.assignPersonId }?.name ?: "Unknown"
             row.createCell(0).setCellValue((i + 1).toDouble())
             row.createCell(1).setCellValue(task.title)
             row.createCell(2).setCellValue(task.taskDetail)

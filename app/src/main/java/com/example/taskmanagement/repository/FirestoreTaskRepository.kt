@@ -1,10 +1,14 @@
 package com.example.taskmanagement.repository
 
 
-import com.example.taskmanagement.model.Status
-import com.example.taskmanagement.model.TaskModel
-import com.example.taskmanagement.model.UserModel
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
+import com.example.taskmanagement.businesslogic.model.Status
+import com.example.taskmanagement.businesslogic.model.TaskModel
+import com.example.taskmanagement.businesslogic.model.UserModel
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -16,79 +20,59 @@ class FirestoreTaskRepository {
     internal val tasksCol = db.collection("tasks")
     private val usersCol = db.collection("users")
 
-    fun getUsersFlow(): Flow<List<UserModel>> = callbackFlow {
+    // Track listeners
+    private val activeListeners = mutableListOf<ListenerRegistration>()
+
+    fun getUsersFlow(context : Context): Flow<List<UserModel>> = callbackFlow {
         val sub = usersCol.addSnapshotListener { snap, ex ->
+            Log.d("getUsersFlow", "addSnapshotListener: ${snap?.documents}")
             if (ex != null) {
-                close(ex)
+                // 👇 Handle permission/firestore denied error
+                Toast.makeText(context, "Something Went Wrong...", Toast.LENGTH_SHORT).show()
+                Log.e("getUsersFlow", "Firestore error", ex)
+                // Optional: send empty list or keep last state
+                trySend(emptyList())
                 return@addSnapshotListener
             }
-            val list = snap!!
-                .documents
-                .mapNotNull { it.toObject(UserModel::class.java)?.copy(uid = it.id) }
-                .filter { userModel ->
-                    // only show non-admin users
-                    userModel.role != "admin"
-                }
+            val list = snap!!.documents.mapNotNull {
+                it.toObject(UserModel::class.java)?.copy(uid = it.id)
+            }.filter { it.role != "admin" }
             trySend(list)
         }
-        awaitClose { sub.remove() }
+        activeListeners.add(sub) // 👈 Track listener
+        awaitClose {
+            sub.remove()
+            activeListeners.remove(sub)
+        }
     }
 
-
-    /*
-    fun getUsersFlow(): Flow<List<UserModel>> = callbackFlow {
-        val sub = usersCol.addSnapshotListener { snap, ex ->
-            if (ex != null) { close(ex); return@addSnapshotListener }
-            val list = snap!!.documents.mapNotNull { it.toObject(UserModel::class.java)?.copy(uid = it.id) }
-            trySend(list)
-        }
-        awaitClose { sub.remove() }
-    }*/
-
-
-
-
-  /*  fun getTasksFlow(userId: String?, status: String?): Flow<List<TaskModel>> = callbackFlow {
-        var query: Query = tasksCol
-        userId?.let { query = query.whereEqualTo("assignPersonId", it) }
-        status?.let { query = query.whereEqualTo("status", it) }
-        query = query.orderBy("assignDate", Query.Direction.DESCENDING)
-
-        val sub = query.addSnapshotListener { snap, ex ->
-            if (ex != null) { close(ex); return@addSnapshotListener }
-            val list = snap!!.documents.mapNotNull { it.toObject(TaskModel::class.java) }
-            trySend(list)
-        }
-        awaitClose { sub.remove() }
-    }*/
-
-    fun getTasksFlow(
-        userId: String?,
-        status: String?
-    ): Flow<List<TaskModel>> = callbackFlow {
+    fun getTasksFlow(context: Context, userId: String?, status: String?): Flow<List<TaskModel>> = callbackFlow {
         var query: Query = tasksCol
         userId?.let { query = query.whereEqualTo("assignPersonId", it) }
         status?.let { query = query.whereEqualTo("status", it) }
         query = query.orderBy("assignDate", Query.Direction.DESCENDING)
 
         val listener = query.addSnapshotListener { snap, ex ->
+            Log.d("getTasksFlow", "addSnapshotListener: ${snap?.documents}")
             if (ex != null) {
-                close(ex); return@addSnapshotListener
+                Toast.makeText(context, "Something Went Wrong...", Toast.LENGTH_SHORT).show()
+                Log.e("getTasksFlow", "Firestore error", ex)
+                trySend(emptyList())
+                return@addSnapshotListener
             }
+
             val list = snap!!.documents.mapNotNull { doc ->
                 val data = doc.data ?: return@mapNotNull null
 
-                // Parse assignDate, handling both Timestamp and Long
                 val rawAssign = data["assignDate"]
-                val assignMillis: Long = when (rawAssign) {
+                val assignMillis = when (rawAssign) {
                     is com.google.firebase.Timestamp -> rawAssign.toDate().time
                     is Number                        -> rawAssign.toLong()
                     else                             -> 0L
                 }
 
-                // Parse completionDate similarly
                 val rawComplete = data["completionDate"]
-                val completeMillis: Long? = when (rawComplete) {
+                val completeMillis = when (rawComplete) {
                     is com.google.firebase.Timestamp -> rawComplete.toDate().time
                     is Number                        -> rawComplete.toLong()
                     else                             -> null
@@ -102,7 +86,7 @@ class FirestoreTaskRepository {
                     assignDate      = assignMillis,
                     completionDate  = completeMillis,
                     remark          = data["remark"] as? String,
-                    userRemark          = data["userRemark"] as? String,
+                    userRemark      = data["userRemark"] as? String,
                     status          = Status.valueOf(data["status"] as? String ?: Status.IN_PROGRESS.name),
                     createdBy       = data["createdBy"] as? String ?: ""
                 )
@@ -110,9 +94,18 @@ class FirestoreTaskRepository {
             trySend(list)
         }
 
-        awaitClose { listener.remove() }
+        activeListeners.add(listener) // 👈 Track listener
+        awaitClose {
+            listener.remove()
+            activeListeners.remove(listener)
+        }
     }
 
+    // Call this on logout
+    fun clearAllListeners() {
+        activeListeners.forEach { it.remove() }
+        activeListeners.clear()
+    }
 
     suspend fun addOrUpdateTask(task: TaskModel) {
         if (task.id.isNullOrEmpty()) {
@@ -125,5 +118,28 @@ class FirestoreTaskRepository {
     suspend fun deleteTask(id: String) {
         tasksCol.document(id).delete().await()
     }
-}
 
+    fun getTitlesForAdmin(context : Context,adminId: String): Flow<List<String>> = callbackFlow {
+        val listener = tasksCol
+            .whereEqualTo("createdBy", adminId)
+            .addSnapshotListener { snap, ex ->
+                if (ex != null) {
+                    // 👇 Handle permission/firestore denied error
+                    Toast.makeText(context, "Something Went Wrong...", Toast.LENGTH_SHORT).show()
+                    Log.e("getUsersFlow", "Firestore error", ex)
+                    // Optional: send empty list or keep last state
+                    trySend(emptyList())
+                    return@addSnapshotListener
+                }
+                val titles = snap
+                    ?.documents
+                    ?.mapNotNull { it.getString("title") }
+                    ?.distinct()
+                    ?: emptyList()
+                trySend(titles)
+            }
+        awaitClose { listener.remove() }
+    }
+
+
+}

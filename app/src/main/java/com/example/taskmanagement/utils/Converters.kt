@@ -1,7 +1,7 @@
 package com.example.taskmanagement.utils
 
 import androidx.room.TypeConverter
-import com.example.taskmanagement.model.Status
+import com.example.taskmanagement.businesslogic.model.Status
 import java.util.Date
 
 // Converters.kt

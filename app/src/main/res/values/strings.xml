@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">My Team</string>
 
-
+    <string name="message_noconnection">Internet connection is not available. Please turn on cellular data or correct Wi-Fi settings.</string>
     <!-- strings.xml -->
     <string-array name="status_array">
         <item>All</item>
@@ -17,8 +17,9 @@
     <string name="text_yes">Yes</string>
     <string name="text_no">No</string>
     <string name="text_delete_item">You Want to Delete Item ?</string>
+    <string name="text_logout">You Want to Logout ?</string>
     <string name="save_task">Save Task</string>
-    <string name="save_update">Update Task</string>
+    <string name="update_task">Update Task</string>
     <string name="cancel">Cancel</string>
     <string name="task_assign_date">Task Assign Date</string>
     <string name="task_completion_date">Task Completion Date</string>
@@ -34,11 +35,13 @@
     <string name="task_title">Task Title:</string>
     <string name="remark">Remark:</string>
     <string name="status">Status:</string>
-    <string name="export">export</string>
+    <string name="export">Export</string>
     <string name="my_team">My Team</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="login">LOGIN</string>
+    <string name="logout">Logout</string>
+    <string name="filter">Filter</string>
     <string name="status_in_progress">In Progress</string>
     <string name="status_mark_done">Pending Approval</string>
     <string name="status_verified_done">Completed</string>
@@ -46,4 +49,11 @@
     <string name="prefUserId" translatable="false">prefUserId</string>
     <string name="prefUserName" translatable="false">prefUserName</string>
     <string name="prefUserRole" translatable="false">prefUserRole</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="text_cancel_task">Are you sure want to Cancel ?</string>
+    <string name="text_mandatory" translatable="false"><![CDATA[ <b><font color=#ff4444>*</font></b>]]></string>
+    <string name="no_records_found">No records available</string>
+
 </resources>
