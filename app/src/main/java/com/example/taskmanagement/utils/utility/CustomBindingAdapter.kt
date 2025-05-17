@@ -107,6 +107,25 @@ object CustomBindingAdapter {
         }
     }
 
+
+    @JvmStatic
+    @BindingAdapter(value = ["formattedDate", "customTitle"])
+    fun setFormattedDateWithText(textView: TextView, inputDate: String?) {
+        inputDate?.let {
+            val inputFormat = SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH)
+            val outputFormat = SimpleDateFormat("EEEE, MMMM d, yyyy", Locale.ENGLISH)
+            val formatted = try {
+                val date = inputFormat.parse(it)
+                date?.let { outputFormat.format(it) } ?: ""
+            } catch (e: Exception) {
+                ""
+            }
+            textView.text = formatted
+        } ?: run {
+            textView.text = ""
+        }
+    }
+
     @JvmStatic
     @BindingAdapter("addHtmlReqTextHint")
     fun addHtmlReqTextHint(textView: TextView, text: String?) {

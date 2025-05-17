@@ -119,27 +119,46 @@ class FirestoreTaskRepository {
         tasksCol.document(id).delete().await()
     }
 
-    fun getTitlesForAdmin(context : Context,adminId: String): Flow<List<String>> = callbackFlow {
-        val listener = tasksCol
-            .whereEqualTo("createdBy", adminId)
-            .addSnapshotListener { snap, ex ->
-                if (ex != null) {
+
+    fun getTitlesForAdmin(context : Context,adminUid: String): Flow<List<String>> = callbackFlow {
+        val listener = FirebaseFirestore.getInstance()
+            .collection("titles")
+            .whereEqualTo("createdBy", adminUid)
+            .addSnapshotListener { value, error ->
+                if (error != null) {
                     // 👇 Handle permission/firestore denied error
                     Toast.makeText(context, "Something Went Wrong...", Toast.LENGTH_SHORT).show()
-                    Log.e("getUsersFlow", "Firestore error", ex)
+                    Log.e("getUsersFlow", "Firestore error", error)
                     // Optional: send empty list or keep last state
                     trySend(emptyList())
                     return@addSnapshotListener
                 }
-                val titles = snap
-                    ?.documents
-                    ?.mapNotNull { it.getString("title") }
-                    ?.distinct()
-                    ?: emptyList()
+
+                val titles = value?.documents?.mapNotNull { it.getString("name") } ?: emptyList()
                 trySend(titles)
             }
+
         awaitClose { listener.remove() }
     }
+
+    suspend fun saveNewTitleIfNotExists(title: String, adminUid: String) {
+        val titlesRef = FirebaseFirestore.getInstance().collection("titles")
+        val existing = titlesRef
+            .whereEqualTo("createdBy", adminUid)
+            .whereEqualTo("name", title)
+            .get()
+            .await()
+
+        if (existing.isEmpty) {
+            titlesRef.add(
+                mapOf(
+                    "name" to title,
+                    "createdBy" to adminUid
+                )
+            )
+        }
+    }
+
 
 
 }

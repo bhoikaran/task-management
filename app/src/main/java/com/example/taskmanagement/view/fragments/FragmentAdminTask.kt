@@ -17,6 +17,7 @@ import com.example.taskmanagement.businesslogic.viewmodel.AdminTaskViewModel
 import com.example.taskmanagement.databinding.FragmentAdminTaskBinding
 import com.example.taskmanagement.utils.Utils
 import com.example.taskmanagement.utils.utility.UtilPreference
+import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -33,7 +34,7 @@ class FragmentAdminTask : FragmentBase() {
     private var selectedUserId: String? = null
     private var selectedStatus = Status.IN_PROGRESS
     private lateinit var titleAdapter: ArrayAdapter<String>
-
+    val currentUser = FirebaseAuth.getInstance().currentUser
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -73,6 +74,9 @@ class FragmentAdminTask : FragmentBase() {
     }
 
     private fun initComponents() {
+        if (currentUser?.uid != null) {
+            mViewModel.setAdminId(currentUser.uid)
+        }
 
         taskId = arguments?.getString("task_id")
 
@@ -267,7 +271,7 @@ class FragmentAdminTask : FragmentBase() {
                 }
             }
 
-            R.id.btnSave ->{
+            R.id.btnSave -> {
                 val title = mBinding.etTitle.text.toString().trim()
                 if (title.isEmpty() || selectedUserId == null) {
                     Toast.makeText(mActivity, "Title and user required", Toast.LENGTH_SHORT).show()

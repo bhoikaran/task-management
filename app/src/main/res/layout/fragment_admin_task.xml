@@ -64,7 +64,23 @@
                                 android:layout_height="wrap_content"
                                 android:inputType="textCapSentences" />
                         </com.google.android.material.textfield.TextInputLayout>-->
-
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/add_patient"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_ripple_mask"
+                            android:drawableStart="@drawable/ic_add"
+                            app:drawableTint="@color/black"
+                            android:drawablePadding="8dp"
+                            android:onClick="@{generalListener::onClick}"
+                            android:paddingVertical="5dp"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="20dp"
+                            android:layout_marginBottom="12dp"
+                            android:text="@string/add_title"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
                         <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -76,8 +92,7 @@
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:padding="8dp"
-                                >
+                                android:padding="8dp">
 
                                 <AutoCompleteTextView
                                     android:id="@+id/etTitle"
@@ -89,7 +104,7 @@
                                     android:textColorHint="@color/color_grey"
                                     android:textStyle="bold"
                                     app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintEnd_toStartOf="@+id/iv_dropdown_select_patient"
+                                    app:layout_constraintEnd_toStartOf="@+id/ivTitleDropdown"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent" />
 

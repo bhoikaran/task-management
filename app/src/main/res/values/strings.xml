@@ -55,5 +55,8 @@
     <string name="text_cancel_task">Are you sure want to Cancel ?</string>
     <string name="text_mandatory" translatable="false"><![CDATA[ <b><font color=#ff4444>*</font></b>]]></string>
     <string name="no_records_found">No records available</string>
-
+    <string name="add_title">Add Title</string>
+    <string name="delete_title">Delete Title</string>
+    <string name="title_name">Title Name</string>
+    <string name="ex_created_at_12_05_2025">Created at: 12/05/2025</string>
 </resources>
