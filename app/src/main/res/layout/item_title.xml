@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="currentPosition"
+            type="int" />
+
+        <import type="com.example.taskmanagement.R" />
+
+        <variable
+            name="isLastItem"
+            type="boolean" />
+
+        <variable
+            name="isAdmin"
+            type="boolean" />
+
+        <variable
+            name="task"
+            type="com.example.taskmanagement.businesslogic.model.TaskModel" />
+
+        <variable
+            name="user"
+            type="com.example.taskmanagement.businesslogic.model.UserModel" />
+
+        <variable
+            name="handler"
+            type="com.example.taskmanagement.businesslogic.interactors.GeneralItemListener" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="3dp"
+        app:cardElevation="6dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_title_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_name"
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+
+
+                <TextView
+                    android:id="@+id/tv_assign_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="@string/ex_created_at_12_05_2025"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:textColor="@android:color/darker_gray"
+                    app:formattedDate='@{task.assignDate}' />
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/iv_delete"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@android:drawable/ic_delete"
+                android:contentDescription="@string/delete_title" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

@@ -54,6 +54,7 @@
     <color name="onSurface">#1C1B1F</color>
     <color name="outline">#79747E</color>
     <color name="surfaceVariant">#E7E0EC</color>
-
+    <color name="success">#4CAF50</color>
+    <color name="color_grey">#C9808080</color>
 
 </resources>

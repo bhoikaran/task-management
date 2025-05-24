@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="com.example.taskmanagement.businesslogic.viewmodel.AdminViewModel" />
+
+        <variable
+            name="generalListener"
+            type="com.example.taskmanagement.businesslogic.interactors.GeneralListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <!-- App Bar -->
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:backgroundTint="?attr/colorSurface"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!-- <TextView
+                     android:id="@+id/title"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="@string/app_name"
+                     android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                     app:layout_constraintBottom_toBottomOf="parent"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toTopOf="parent" />-->
+
+               <!-- <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                    android:id="@+id/fabAddTask"
+                    style="@style/Widget.Material3.ExtendedFloatingActionButton.Primary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_task"
+                    app:extendStrategy="wrap_content"
+                    app:icon="@drawable/ic_add"
+                    android:onClick="@{generalListener::onClick}"
+                    app:iconTint="@android:color/white"
+                    app:layout_anchorGravity="bottom|end"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:shapeAppearance="@style/ShapeAppearance.Material3.LargeComponent" />-->
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/fabAddTask"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_ripple_mask"
+                    android:onClick="@{generalListener::onClick}"
+                    android:orientation="horizontal"
+                    android:padding="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/tv_add_task"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/add_task"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/iv_add_task"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                    <ImageView
+                        android:id="@+id/iv_add_task"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_marginStart="8dp"
+                        android:contentDescription="@string/export"
+                        android:src="@drawable/ic_add"
+                        app:layout_constraintStart_toEndOf="@+id/tv_add_task"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:tint="@color/black" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <ImageButton
+                    android:id="@+id/btnLogout"
+                    style="@style/Widget.Material3.Button.IconButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:contentDescription="@string/logout"
+                    android:onClick="@{generalListener::onClick}"
+                    android:src="@drawable/ic_logout"
+                    app:iconTint="@color/error"
+                    android:foreground="?attr/selectableItemBackground"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.appbar.MaterialToolbar>
+
+        <!-- Filter Section -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/filterSection"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/topAppBar">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@android:drawable/divider_horizontal_dark"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:showDividers="middle">
+
+                <!-- User Spinner -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/select_user" />
+
+                    <Spinner
+                        android:id="@+id/spinnerUser"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:spinnerMode="dropdown" />
+                </LinearLayout>
+
+                <!-- Status Spinner -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/select_status" />
+
+                    <Spinner
+                        android:id="@+id/spinnerStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:spinnerMode="dropdown" />
+                </LinearLayout>
+
+                <!-- Apply Button -->
+                <Button
+                    android:id="@+id/btnApplyFilters"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{generalListener::onClick}"
+                    android:text="@string/apply" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Export Button -->
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/exportToExcel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_ripple_mask"
+            android:onClick="@{generalListener::onClick}"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/filterSection"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/tv_export_title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/export"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/iv_export"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <ImageView
+                android:id="@+id/iv_export"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/export"
+                android:src="@drawable/xls"
+                app:layout_constraintStart_toEndOf="@+id/tv_export_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+               />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/exportToExcel"
+            tools:itemCount="5"
+            tools:listitem="@layout/task_item" />
+
+        <!-- Add Task FAB -->
+        <!--  <com.google.android.material.floatingactionbutton.FloatingActionButton
+              android:id="@+id/fabAddTask"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_margin="16dp"
+              android:contentDescription="@string/add_task"
+              android:onClick="@{generalListener::onClick}"
+              app:backgroundTint="@color/primary"
+              app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:srcCompat="@drawable/ic_add" />
+-->
+        <!-- Empty State -->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvEmptyState"
+            style="@style/TextAppearance.Material3.HeadlineSmall"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/no_records_found"
+            android:visibility="@{viewModel.observerNoRecords == 2 ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/exportToExcel"
+            tools:layout_editor_absoluteX="16dp"
+
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
+
+
+    <!--
+        <?xml version="1.0" encoding="utf-8"?>
+    <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="com.example.taskmanagement.businesslogic.viewmodel.AdminViewModel" />
+
+        <variable
+            name="onClickNavHeader"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="generalListener"
+            type="com.example.taskmanagement.businesslogic.interactors.GeneralListener" />
+
+        <variable
+            name="onNavigationItemSelectedListener"
+            type="com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        &lt;!&ndash; Logout Button &ndash;&gt;
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/logout"
+            android:onClick="@{generalListener::onClick}"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        &lt;!&ndash; Filters Card &ndash;&gt;
+        <androidx.cardview.widget.CardView
+            android:id="@+id/filterSection"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="8dp"
+            app:layout_constraintTop_toBottomOf="@id/btnLogout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:gravity="center_vertical"
+                android:divider="@android:drawable/divider_horizontal_dark"
+                android:showDividers="middle">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/select_user" />
+
+                    <Spinner
+                        android:id="@+id/spinnerUser"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:prompt="@string/select_user"
+                        android:spinnerMode="dropdown" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/select_status" />
+
+                    <Spinner
+                        android:id="@+id/spinnerStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:prompt="@string/select_status"
+                        android:spinnerMode="dropdown" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnApplyFilters"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:onClick="@{generalListener::onClick}"
+                    android:text="@string/apply" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        &lt;!&ndash; Export to Excel &ndash;&gt;
+        <LinearLayout
+            android:id="@+id/exportToExcel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_ripple_mask"
+            android:onClick="@{generalListener::onClick}"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/filterSection"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/exportToExcelTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/export" />
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/export"
+                android:src="@drawable/xls" />
+        </LinearLayout>
+
+        &lt;!&ndash; RecyclerView &ndash;&gt;
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/exportToExcel"
+            app:layout_constraintBottom_toTopOf="@id/fabAddTask"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:listitem="@layout/task_item" />
+
+        &lt;!&ndash; No Record Text &ndash;&gt;
+        <com.google.android.material.textview.MaterialTextView
+            style="@style/NorecordTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:visibility="@{viewModel.observerNoRecords==2?View.VISIBLE:View.GONE}"
+            app:layout_constraintTop_toBottomOf="@id/exportToExcel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="No records available"
+            tools:visibility="visible" />
+
+        &lt;!&ndash; FAB to Add Task &ndash;&gt;
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAddTask"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:contentDescription="@string/add_task"
+            android:onClick="@{generalListener::onClick}"
+            android:src="@drawable/ic_add"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    </layout>
+    -->

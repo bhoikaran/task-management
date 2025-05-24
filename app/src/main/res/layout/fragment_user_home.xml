@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="com.example.taskmanagement.businesslogic.viewmodel.UserViewModel" />
+
+        <variable
+            name="onClickNavHeader"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="generalListener"
+            type="com.example.taskmanagement.businesslogic.interactors.GeneralListener" />
+
+        <variable
+            name="onNavigationItemSelectedListener"
+            type="com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener" />
+
+    </data>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+
+       <!-- <LinearLayout
+            android:id="@+id/filterSection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:divider="@android:drawable/divider_horizontal_dark"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:showDividers="middle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_status" />
+
+            <Spinner
+                android:id="@+id/spinnerStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:prompt="@string/select_status"
+                android:spinnerMode="dropdown" />
+
+
+        </LinearLayout>-->
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/filterSection"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tv_select_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/select_status"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <Spinner
+                android:id="@+id/spinnerStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:spinnerMode="dropdown"
+
+                app:layout_constraintTop_toBottomOf="@+id/tv_select_status"
+                app:layout_constraintStart_toStartOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageButton
+            android:id="@+id/btnLogout"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/logout"
+            android:onClick="@{generalListener::onClick}"
+            android:src="@drawable/ic_logout"
+            app:iconTint="@color/error"
+            android:foreground="?attr/selectableItemBackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/filterSection"
+            tools:listitem="@layout/task_item" />
+
+
+        <com.google.android.material.textview.MaterialTextView
+            style="@style/NorecordTextStyle"
+            android:visibility="@{viewModel.observerNoRecords==2?View.VISIBLE:View.GONE}"
+            tools:ignore="MissingConstraints"
+            tools:visibility="visible" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
+
+
+
+
+

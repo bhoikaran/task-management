@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "651627869443",
+    "firebase_url": "https://loginregister-c1cb7-default-rtdb.firebaseio.com",
+    "project_id": "loginregister-c1cb7",
+    "storage_bucket": "loginregister-c1cb7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:651627869443:android:bd7c58fa40b2af2395e536",
+        "android_client_info": {
+          "package_name": "com.example.loginregisterfirebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmIndXZjMYtDD5c-CG6BSW5vTYWc76nlk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:651627869443:android:d1243821ac38cc6595e536",
+        "android_client_info": {
+          "package_name": "com.example.taskmanagement"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmIndXZjMYtDD5c-CG6BSW5vTYWc76nlk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
