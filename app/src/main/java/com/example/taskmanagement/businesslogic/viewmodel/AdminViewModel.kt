@@ -26,12 +26,10 @@ class AdminViewModel(mApplication: MyApplication) : ViewModelBase(mApplication) 
     val filteredTasks: LiveData<List<TaskModel>> =
         MediatorLiveData<List<TaskModel>>().apply {
             fun reload() {
-                Log.d("filteredTasks", "filteredTasks+++ : " + filteredTasks.value)
                 viewModelScope.launch(Dispatchers.IO) {
                     repo.getTasksFlow(mApplication,_userFilter.value, _statusFilter.value)
                         .collect { postValue(it) }
                 }
-                Log.d("filteredTasks", "filteredTasks+++ : " + filteredTasks.value)
             }
             addSource(_userFilter) { reload() }
             addSource(_statusFilter) { reload() }
@@ -42,13 +40,6 @@ class AdminViewModel(mApplication: MyApplication) : ViewModelBase(mApplication) 
         _statusFilter.value = status
     }
 
-    fun addTask(task: TaskModel) = viewModelScope.launch(Dispatchers.IO) {
-        repo.addOrUpdateTask(task)
-    }
-
-    fun updateTask(task: TaskModel) = viewModelScope.launch(Dispatchers.IO) {
-        repo.addOrUpdateTask(task)
-    }
 
     fun deleteTask(task: TaskModel) = viewModelScope.launch(Dispatchers.IO) {
         task.id?.let { repo.deleteTask(it) }

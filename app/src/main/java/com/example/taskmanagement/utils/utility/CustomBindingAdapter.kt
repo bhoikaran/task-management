@@ -24,6 +24,7 @@ import com.example.taskmanagement.businesslogic.interactors.ObservableString
 import com.example.taskmanagement.businesslogic.model.Status
 import com.example.taskmanagement.utils.Util
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -107,6 +108,7 @@ object CustomBindingAdapter {
         }
     }
 
+/*
 
     @JvmStatic
     @BindingAdapter(value = ["formattedDate", "customTitle"])
@@ -125,12 +127,25 @@ object CustomBindingAdapter {
             textView.text = ""
         }
     }
+*/
 
     @JvmStatic
     @BindingAdapter("addHtmlReqTextHint")
     fun addHtmlReqTextHint(textView: TextView, text: String?) {
         val modifiedText = "${text ?: ""} ${textView.resources.getString(R.string.text_mandatory)}"
         textView.text = Html.fromHtml(modifiedText, Html.FROM_HTML_MODE_COMPACT)
+    }
+
+
+    @JvmStatic
+    @BindingAdapter("addCreatedDate")
+    fun addCreatedDate(textView: TextView, text: Timestamp?) {
+        var modifiedText = "-"
+        if (text != null) {
+            modifiedText=  " ${textView.resources.getString(R.string.text_created_at)} ${SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(text.toDate())}"
+        }
+
+        textView.text = modifiedText
     }
 
     @JvmStatic

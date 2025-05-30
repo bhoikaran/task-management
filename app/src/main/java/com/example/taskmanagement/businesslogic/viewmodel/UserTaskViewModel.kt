@@ -29,11 +29,6 @@ class UserTaskViewModel(mApplication: MyApplication) : ViewModelBase(mApplicatio
 
 
     /** Create or update a task */
-    fun addTask(task: TaskModel) = viewModelScope.launch(Dispatchers.IO) {
-        repo.addOrUpdateTask(task)
-    }
-
-    fun updateTask(task: TaskModel) = addTask(task)
 
     /** Delete a task */
     fun deleteTask(task: TaskModel) = viewModelScope.launch(Dispatchers.IO) {

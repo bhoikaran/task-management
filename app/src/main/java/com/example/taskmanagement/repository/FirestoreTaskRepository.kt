@@ -6,7 +6,9 @@ import android.util.Log
 import android.widget.Toast
 import com.example.taskmanagement.businesslogic.model.Status
 import com.example.taskmanagement.businesslogic.model.TaskModel
+import com.example.taskmanagement.businesslogic.model.TitleModel
 import com.example.taskmanagement.businesslogic.model.UserModel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
@@ -19,6 +21,7 @@ class FirestoreTaskRepository {
     private val db = FirebaseFirestore.getInstance()
     internal val tasksCol = db.collection("tasks")
     private val usersCol = db.collection("users")
+    private val titleCol = db.collection("titles")
 
     // Track listeners
     private val activeListeners = mutableListOf<ListenerRegistration>()
@@ -118,7 +121,17 @@ class FirestoreTaskRepository {
     suspend fun deleteTask(id: String) {
         tasksCol.document(id).delete().await()
     }
+    suspend fun addOrUpdateTitle(title: TitleModel) {
+        if (title.id.isNullOrEmpty()) {
+            titleCol.add(title).await()
+        } else {
+            tasksCol.document(title.id).set(title).await()
+        }
+    }
 
+    suspend fun deleteTitle(id: String) {
+        titleCol.document(id).delete().await()
+    }
 
     fun getTitlesForAdmin(context : Context,adminUid: String): Flow<List<String>> = callbackFlow {
         val listener = FirebaseFirestore.getInstance()
@@ -158,6 +171,42 @@ class FirestoreTaskRepository {
             )
         }
     }
+
+   /* fun fetchTitlesForCurrentUser(onResult: (List<TitleModel>) -> Unit, onError: (Exception) -> Unit) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        FirebaseFirestore.getInstance()
+            .collection("titles")
+            .whereEqualTo("createdBy", uid)
+            .orderBy("createdAt", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val titles = snapshot.toObjects(TitleModel::class.java)
+                onResult(titles)
+            }
+            .addOnFailureListener { e ->
+                onError(e)
+            }
+    }*/
+
+    fun getAdminTitles(context: Context, adminId: String): Flow<List<TitleModel>> = callbackFlow {
+        val listener = FirebaseFirestore.getInstance()
+            .collection("titles")
+            .whereEqualTo("createdBy", adminId)
+            .orderBy("createdAt", Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+
+                val titles = snapshot?.toObjects(TitleModel::class.java) ?: emptyList()
+                trySend(titles)
+            }
+
+        awaitClose { listener.remove() }
+    }
+
 
 
 

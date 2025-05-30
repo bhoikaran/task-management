@@ -38,14 +38,6 @@ class UserViewModel(mApplication: MyApplication) : ViewModelBase(mApplication) {
         _statusFilter.value = status
     }
 
-    fun addTask(task: TaskModel) = viewModelScope.launch(Dispatchers.IO) {
-        repo.addOrUpdateTask(task)
-    }
-
-    fun updateTask(task: TaskModel) = viewModelScope.launch(Dispatchers.IO) {
-        repo.addOrUpdateTask(task)
-    }
-
     fun deleteTask(task: TaskModel) = viewModelScope.launch(Dispatchers.IO) {
         task.id?.let { repo.deleteTask(it) }
     }

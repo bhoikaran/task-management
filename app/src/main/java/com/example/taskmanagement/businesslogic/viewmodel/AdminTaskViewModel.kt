@@ -11,8 +11,10 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.example.taskmanagement.MyApplication
+import com.example.taskmanagement.businesslogic.interactors.ObservableString
 import com.example.taskmanagement.businesslogic.model.Status
 import com.example.taskmanagement.businesslogic.model.TaskModel
+import com.example.taskmanagement.businesslogic.model.TitleModel
 import com.example.taskmanagement.businesslogic.model.UserModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,7 +22,18 @@ import kotlinx.coroutines.tasks.await
 
 
 class AdminTaskViewModel(mApplication: MyApplication) : ViewModelBase(mApplication) {
+     var taskModel: TaskModel = TaskModel()
 
+    var observableTitle = ObservableString("")
+    var observableTaskDescription = ObservableString("")
+    var observableTaskAssignTo = ObservableString("")
+    var observableTaskAssignToUid = ObservableString("")
+    var observableTaskStatus = ObservableString("")
+    var selectedStatus :Status = Status.IN_PROGRESS
+    var observableAssignDate = ObservableString("")
+    var observableCompleteDate = ObservableString("")
+    var observableTaskAdminRemark = ObservableString("")
+    var observableTaskUserRemark = ObservableString("")
 
     // Expose non-admin users
     val allUsers: LiveData<List<UserModel>> = repo
@@ -41,14 +54,24 @@ class AdminTaskViewModel(mApplication: MyApplication) : ViewModelBase(mApplicati
     private val userFilter = MutableLiveData<String?>(null)
     private val statusFilter = MutableLiveData<String?>(null)
     private val _adminId = MutableLiveData<String>()
-    fun setAdminId(uid: String) { _adminId.value = uid }
+    fun setAdminId(uid: String) {
+        _adminId.value = uid
+    }
 
     // titles stream:
     val titleSuggestions: LiveData<List<String>> =
         _adminId.switchMap { uid ->
-            repo.getTitlesForAdmin(mApplication,uid)
+            repo.getTitlesForAdmin(mApplication, uid)
                 .asLiveData(viewModelScope.coroutineContext)
         }
+
+
+    val adminTitles: LiveData<List<TitleModel>> =
+        _adminId.switchMap { uid ->
+            repo.getAdminTitles(mApplication, uid)
+                .asLiveData(viewModelScope.coroutineContext)
+        }
+
     init {
         // Whenever filters change, reload the tasks
         MediatorLiveData<Unit>().apply {
@@ -58,11 +81,10 @@ class AdminTaskViewModel(mApplication: MyApplication) : ViewModelBase(mApplicati
     }
 
 
-
     /** Load tasks from Firestore according to current filters */
     private fun loadTasks(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            repo.getTasksFlow(context,userFilter.value, statusFilter.value)
+            repo.getTasksFlow(context, userFilter.value, statusFilter.value)
                 .collect { list ->
                     _filteredTasks.postValue(list)
                     observerNoRecords.set(if (list.isEmpty()) 2 else 1)
@@ -70,13 +92,6 @@ class AdminTaskViewModel(mApplication: MyApplication) : ViewModelBase(mApplicati
         }
     }
 
-
-    /** Create or update a task */
-    fun addTask(task: TaskModel) = viewModelScope.launch(Dispatchers.IO) {
-        repo.addOrUpdateTask(task)
-    }
-
-    fun updateTask(task: TaskModel) = addTask(task)
 
 
     /** Fetch one task by ID (for edit) */
@@ -88,5 +103,13 @@ class AdminTaskViewModel(mApplication: MyApplication) : ViewModelBase(mApplicati
         } catch (e: Exception) {
             emit(null)
         }
+    }
+
+    fun saveTask() {
+        TODO("Not yet implemented")
+    }
+
+    fun getUserNameById(userId: String?): String {
+        return allUsers.value?.firstOrNull { it.uid == userId }?.name ?: ""
     }
 }

@@ -1,0 +1,21 @@
+<!-- bg_holographic_line.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="line">
+            <stroke
+                android:width="1dp"
+                android:color="#4D00FFE0"
+                android:dashWidth="8dp"
+                android:dashGap="4dp"/>
+        </shape>
+    </item>
+    <item android:top="1dp">
+        <shape android:shape="line">
+            <stroke
+                android:width="1dp"
+                android:color="#4DFF00E9"
+                android:dashWidth="8dp"
+                android:dashGap="4dp"/>
+        </shape>
+    </item>
+</layer-list>

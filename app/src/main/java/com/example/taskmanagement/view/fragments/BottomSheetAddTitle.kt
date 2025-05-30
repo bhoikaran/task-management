@@ -4,26 +4,36 @@ import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsets
+import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.taskmanagement.R
+import com.example.taskmanagement.businesslogic.interactors.GeneralItemListener
+import com.example.taskmanagement.businesslogic.interactors.GeneralListener
+import com.example.taskmanagement.businesslogic.model.TaskModel
+import com.example.taskmanagement.businesslogic.model.TitleModel
 import com.example.taskmanagement.businesslogic.viewmodel.AdminTaskViewModel
 import com.example.taskmanagement.databinding.BottomSheetAddTitleBinding
+import com.example.taskmanagement.view.activity.main.MainActivity
+import com.example.taskmanagement.view.adapter.TaskAdapter
+import com.example.taskmanagement.view.adapter.TitleAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.firebase.Timestamp
 
 
-class BottomSheetAddTitle : Fragment() {
+class BottomSheetAddTitle : BottomSheetBase() {
 
     private lateinit var mBinding: BottomSheetAddTitleBinding
     private lateinit var viewModel: AdminTaskViewModel
-    private lateinit var bottomSheetBehavior : BottomSheetBehavior<View>
-    private lateinit var  selectedCountryCode : String
-
-
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
+    private lateinit var titleAdapter: TitleAdapter
     fun setViewModel(viewModel: AdminTaskViewModel) {
         this.viewModel = viewModel
     }
@@ -47,21 +57,34 @@ class BottomSheetAddTitle : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         mBinding.constraintBusArea.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
         bottomSheetBehavior = BottomSheetBehavior.from((mBinding.root.parent) as View)
-        bottomSheetBehavior.setPeekHeight(
-            getScreenHeight(mActivity) - toolBarHeight - statusBarHeight
-        )
+        if (mActivity != null) {
+            bottomSheetBehavior.setPeekHeight(
+                getScreenHeight(mActivity!!) - statusBarHeight
+            )
+        }
+
         initComponents()
         observeEvent()
 
-        selectedCountryCode = mBinding.ccp.selectedCountryCodeWithPlus
+
     }
 
     private fun initComponents() {
+        setupRecyclerView()
 
     }
 
     private fun observeEvent() {
+        viewModel.adminTitles.observe(viewLifecycleOwner) { titleList ->
+            titleAdapter.titles = titleList
+        }
+    }
 
+    private fun setupRecyclerView() {
+        titleAdapter = TitleAdapter(generalItemListener)
+
+        mBinding.rvTitles.layoutManager = LinearLayoutManager(activity)
+        mBinding.rvTitles.adapter = titleAdapter
     }
 
     fun dismissDialog() {
@@ -89,24 +112,40 @@ class BottomSheetAddTitle : Fragment() {
             return result
         }
 
-    val toolBarHeight: Int
-        get() = (mActivity as ActivityScheduleSession).getToolbarHeight()
 
     private val generalListener: GeneralListener = GeneralListener { view ->
         if (view != null) {
-            if (view.id == R.id.img_close) {
-                viewModel.setMutableDialog("close")
+            when (view.id) {
+
+
+                R.id.btn_add_title -> {
+                    Log.d("btn_add_title","btn_add_title :   vbdsdf")
+                    val title = mBinding.etTitleName.text.toString().trim()
+                    if (title.isEmpty()) {
+                        Toast.makeText(mActivity, "Title is required", Toast.LENGTH_SHORT)
+                            .show()
+                        return@GeneralListener
+                    }
+                    val model = TitleModel(
+                        name = title,
+                        createdBy = viewModel.mSharePreference?.getString(R.string.prefUserId)
+                            ?: "",
+                        createdAt = Timestamp.now()
+                    )
+                    viewModel.addTitle(model)
+                }R.id.img_close -> {
+                dismissDialog()
+            }
             }
         }
     }
 
     companion object {
         fun newInstance(
-            viewModel: ViewModelScheduleSession,
-            isNational: Boolean
-        ):BottomSheetAddPatients {
+            viewModel: AdminTaskViewModel,
+        ): BottomSheetAddTitle {
             val bottomSheet =
-                BottomSheetAddPatients()
+                BottomSheetAddTitle()
             bottomSheet.setViewModel(viewModel)
             return bottomSheet
         }
@@ -124,4 +163,20 @@ class BottomSheetAddTitle : Fragment() {
             }
         }
     }
+
+    private val generalItemListener = GeneralItemListener { view, _, item ->
+        if (item is TitleModel) {
+            when (view?.id) {
+
+                R.id.iv_delete -> {
+
+                    showConfirmationDialog((getString(R.string.text_delete_item))) { dialog, which ->
+                        viewModel.deleteTitle(item)
+                    }
+                }
+
+            }
+        }
+    }
+
 }

@@ -5,11 +5,16 @@ import android.util.Log
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.taskmanagement.MyApplication
 import com.example.taskmanagement.businesslogic.interactors.ObservableString
+import com.example.taskmanagement.businesslogic.model.TaskModel
+import com.example.taskmanagement.businesslogic.model.TitleModel
 import com.example.taskmanagement.repository.AuthRepository
 import com.example.taskmanagement.repository.FirestoreTaskRepository
 import com.example.taskmanagement.utils.utility.UtilPreference
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 open class ViewModelBase(mApplication: MyApplication) : ViewModel() {
 
@@ -37,4 +42,21 @@ open class ViewModelBase(mApplication: MyApplication) : ViewModel() {
     fun onApiFailure() {
         observerSnackBarInt.set(com.example.taskmanagement.R.string.message_noconnection)
     }
+
+
+    /** Create or update a task */
+    fun addTask(task: TaskModel) = viewModelScope.launch(Dispatchers.IO) {
+        repo.addOrUpdateTask(task)
+    }
+
+    fun updateTask(task: TaskModel) = addTask(task)
+
+    fun addTitle(title: TitleModel) = viewModelScope.launch(Dispatchers.IO) {
+        repo.addOrUpdateTitle(title)
+    }
+
+    fun deleteTitle(titleModel: TitleModel) = viewModelScope.launch(Dispatchers.IO) {
+        titleModel.id?.let { repo.deleteTitle(it) }
+    }
+
 }

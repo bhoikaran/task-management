@@ -22,12 +22,8 @@
             type="boolean" />
 
         <variable
-            name="task"
-            type="com.example.taskmanagement.businesslogic.model.TaskModel" />
-
-        <variable
-            name="user"
-            type="com.example.taskmanagement.businesslogic.model.UserModel" />
+            name="title"
+            type="com.example.taskmanagement.businesslogic.model.TitleModel" />
 
         <variable
             name="handler"
@@ -39,8 +35,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
         app:cardBackgroundColor="@android:color/white"
-        app:cardCornerRadius="3dp"
-        app:cardElevation="6dp">
+        app:cardCornerRadius="5dp"
+        app:cardElevation="3dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -59,7 +55,8 @@
                     android:id="@+id/tv_title_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/title_name"
+                    tools:text="@string/title_name"
+                    android:text='@{title.name}'
                     android:textStyle="bold"
                     android:textSize="16sp" />
 
@@ -71,7 +68,7 @@
                     tools:text="@string/ex_created_at_12_05_2025"
                     android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                     android:textColor="@android:color/darker_gray"
-                    app:formattedDate='@{task.assignDate}' />
+                    app:addCreatedDate='@{title.createdAt}' />
 
             </LinearLayout>
 
@@ -80,6 +77,7 @@
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:src="@android:drawable/ic_delete"
+                android:onClick="@{(v) -> handler.onItemClick(v, currentPosition, title)}"
                 android:contentDescription="@string/delete_title" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

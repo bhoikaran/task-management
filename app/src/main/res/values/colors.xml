@@ -56,5 +56,13 @@
     <color name="surfaceVariant">#E7E0EC</color>
     <color name="success">#4CAF50</color>
     <color name="color_grey">#C9808080</color>
+    <color name="colorOnSurface">#FFFFFFFF</color>
 
+
+    <color name="quantum_blue">#00F0FF</color>
+    <color name="quantum_purple">#FF00F0</color>
+    <color name="space_black">#0A0A14</color>
+
+
+    <color name="color_field_bg">#F6F4FA</color>
 </resources>

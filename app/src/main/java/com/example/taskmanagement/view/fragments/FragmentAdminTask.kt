@@ -1,6 +1,7 @@
 package com.example.taskmanagement.view.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,9 +17,9 @@ import com.example.taskmanagement.businesslogic.model.TaskModel
 import com.example.taskmanagement.businesslogic.viewmodel.AdminTaskViewModel
 import com.example.taskmanagement.databinding.FragmentAdminTaskBinding
 import com.example.taskmanagement.utils.Utils
-import com.example.taskmanagement.utils.utility.UtilPreference
 import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -28,28 +29,22 @@ class FragmentAdminTask : FragmentBase() {
     private lateinit var mViewModel: AdminTaskViewModel
     private var taskId: String? = null
     private var isEdit = false
-    private var taskModel: TaskModel = TaskModel()
+
     private var selectedAssignDate = System.currentTimeMillis()
     private var selectedCompleteDate: Long? = null
-    private var selectedUserId: String? = null
-    private var selectedStatus = Status.IN_PROGRESS
     private lateinit var titleAdapter: ArrayAdapter<String>
+    private lateinit var userAdapter: ArrayAdapter<String>
+    private lateinit var statusAdapter: ArrayAdapter<String>
     val currentUser = FirebaseAuth.getInstance().currentUser
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
 
-    }
+    private var bottomSheetAddTitle: BottomSheetAddTitle? = null
+
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         mBinding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_admin_task,
-            container,
-            false
+            inflater, R.layout.fragment_admin_task, container, false
         )
         mViewModel = AdminTaskViewModel(requireActivity().applicationContext as MyApplication)
         mBinding.viewModel = mViewModel
@@ -74,6 +69,8 @@ class FragmentAdminTask : FragmentBase() {
     }
 
     private fun initComponents() {
+        mBinding.actvAssignedUser.keyListener = null
+
         if (currentUser?.uid != null) {
             mViewModel.setAdminId(currentUser.uid)
         }
@@ -86,31 +83,30 @@ class FragmentAdminTask : FragmentBase() {
             mViewModel.editMode.set(true)
             mViewModel.getTaskById(taskId!!).observe(getViewLifecycleOwner()) { task ->
                 if (task != null) {
-                    taskModel = task
+
+                    mViewModel.taskModel = task
                 }
 
                 task?.let { populateForEdit(it) }
             }
         }
-        titleAdapter = ArrayAdapter(
-            requireActivity(),
-            android.R.layout.simple_dropdown_item_1line,
-            mutableListOf()
-        )
-        mBinding.etTitle.setAdapter(titleAdapter)
 
-        setupSpinners()
-        setupDatePickers()
-        setupSave()
+
+//        setupSpinners()
+        setupUserAutoComplete()
+
 
     }
 
     private fun observeEvents() {
-        mBinding.etTitle.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) mBinding.etTitle.showDropDown()
+        mBinding.atvTextTitle.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) mBinding.atvTextTitle.showDropDown()
         }
-        mBinding.ivTitleDropdown.setOnClickListener {
-            mBinding.etTitle.showDropDown()
+        mBinding.actvStatus.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) mBinding.actvStatus.showDropDown()
+        }
+        mBinding.actvAssignedUser.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) mBinding.actvAssignedUser.showDropDown()
         }
 
         // 3) observe the suggestions LiveData
@@ -119,141 +115,112 @@ class FragmentAdminTask : FragmentBase() {
             titleAdapter.addAll(suggestions)
             titleAdapter.notifyDataSetChanged()
         }
-    }
 
-    private fun setupSpinners() {
-        // status spinner
-        val statuses = Status.entries.map { it.name }
-        mBinding.spinnerStatus.adapter = ArrayAdapter(
-            requireActivity(), android.R.layout.simple_spinner_item, statuses
-        ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
 
-        mBinding.spinnerStatus.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    selectedStatus = mViewModel.allStatus[position]
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                }
-            }
-
-        // user spinner
         mViewModel.allUsers.observe(getViewLifecycleOwner()) { users ->
-            val names = users.map { it.name }
-            val ids = users.map { it.uid }
-            mBinding.spinnerUser.adapter = ArrayAdapter(
-                requireActivity(), android.R.layout.simple_spinner_item, names
-            ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
 
+            Log.d("Tag","All Users : ${mViewModel.allUsers.value}")
+            val userNames = users.map { it.name }
 
+            userAdapter.clear()
+            userAdapter.addAll(userNames)
+            userAdapter.notifyDataSetChanged()
 
-            mBinding.spinnerUser.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        selectedUserId = mViewModel.allUsers.value?.get(position)?.uid
-                    }
+            // When a user is selected
+            mBinding.actvAssignedUser.setOnItemClickListener { _, _, position, _ ->
 
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                        selectedUserId = null
-                    }
+                mViewModel.observableTaskAssignTo.set(users[position].name)
+                mViewModel.observableTaskAssignToUid.set(users[position].uid)
+            }
+
+            // Pre-select user if editing
+            if (isEdit) {
+                val selectedIndex = users.indexOfFirst { it.uid ==mViewModel.taskModel.assignPersonId }
+                if (selectedIndex != -1) {
+                    mBinding.actvAssignedUser.setText(users[selectedIndex].name, false)
+
+                    mViewModel.observableTaskAssignTo.set(users[selectedIndex].uid)
                 }
+            }
         }
+
+
+
     }
 
-    private fun setupDatePickers() {
-        mBinding.tvAssignDate.setOnClickListener {
-            Utils().openDatePicker(requireActivity()) { millis, text ->
-                selectedAssignDate = millis
-                mBinding.tvAssignDate.setText(text)
-            }
-        }
-        mBinding.tvPickCompleteDate.setOnClickListener {
-            Utils().openDatePicker(
-                requireActivity(),
-                minDate = selectedAssignDate
-            ) { millis, text ->
-                selectedCompleteDate = millis
-                mBinding.tvPickCompleteDate.setText(text)
-            }
-        }
-    }
 
-    private fun setupSave() {
-        mBinding.btnSave.setOnClickListener {
-            val title = mBinding.etTitle.text.toString().trim()
-            if (title.isEmpty() || selectedUserId == null) {
-                Toast.makeText(mActivity, "Title and user required", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            val detail = mBinding.etDescription.text.toString().trim()
-            val remark = mBinding.etRemark.text.toString().trim().takeIf { it.isNotEmpty() }
+    private fun setupUserAutoComplete() {
 
-            val model = TaskModel(
-                id = if (isEdit) taskId else null,
-                title = title,
-                taskDetail = detail,
-                assignPersonId = selectedUserId!!,
-                assignDate = selectedAssignDate,
-                completionDate = selectedCompleteDate,
-                remark = remark,
-                userRemark = taskModel.userRemark,
-                status = selectedStatus,
-                createdBy = mViewModel.mSharePreference?.getString(R.string.prefUserId) ?: ""
+        titleAdapter = ArrayAdapter(
+            requireActivity(), android.R.layout.simple_dropdown_item_1line, mutableListOf()
+        )
+        mBinding.atvTextTitle.setAdapter(titleAdapter)
 
-            )
-            mViewModel.addTask(model)
-            getParentFragmentManager().popBackStack();
+        userAdapter = ArrayAdapter(
+            requireActivity(), android.R.layout.simple_dropdown_item_1line, mutableListOf()
+        )
+        mBinding.actvAssignedUser.setAdapter(userAdapter)
+
+
+        val statuses = Status.entries.map { it.name }
+
+        val adapter = ArrayAdapter(
+            requireContext(), android.R.layout.simple_dropdown_item_1line, statuses
+        )
+        mBinding.actvStatus.setAdapter(adapter)
+
+        mBinding.actvStatus.setOnItemClickListener { _, _, position, _ ->
+           mViewModel.selectedStatus = Status.entries[position]
+
+            mViewModel.observableTaskStatus.set(Status.entries[position].toString())
         }
+
     }
 
     private fun populateForEdit(task: TaskModel) {
 
-        mBinding.etTitle.setText(task.title)
-        mBinding.etDescription.setText(task.taskDetail)
 
+        mViewModel.observableTitle.set(task.title)
+        mViewModel.observableTaskDescription.set(task.taskDetail)
+        mViewModel.observableTaskAssignTo.set(mViewModel.getUserNameById(task.assignPersonId))
+
+        mViewModel.observableTaskAssignToUid.set(task.assignPersonId)
         selectedAssignDate = task.assignDate
-//        binding.tvAssignDate.text = formatDate(task.assignDate)
-        mBinding.tvAssignDate.setText(formatDate(task.assignDate))
-        // Assign user in spinner
-        mViewModel.allUsers.observe(getViewLifecycleOwner()) { users ->
-            val index = users.indexOfFirst { it.uid == task.assignPersonId }
-            if (index != -1) {
-                mBinding.spinnerUser.setSelection(index) // +1 because of "Select User"
-            }
-        }
+        mViewModel.observableAssignDate.set(formatDate(task.assignDate))
 
-        selectedUserId = task.assignPersonId
-
-        // Remark
-        mBinding.etRemark.setText(task.remark)
-        mBinding.etUserRemark.setText(task.userRemark)
-
-        // Completion Date
         selectedCompleteDate = task.completionDate
         if (selectedCompleteDate != null) {
-            mBinding.tvPickCompleteDate.setText(formatDate(selectedCompleteDate!!))
+            mViewModel.observableCompleteDate.set(formatDate(selectedCompleteDate!!))
         }
 
+        mViewModel.observableTaskDescription.set(task.taskDetail)
+        mViewModel.observableTaskAdminRemark.set(task.remark)
+        mViewModel.observableTaskUserRemark.set(task.userRemark)
+        // Assign user in spinner
+        /* mViewModel.allUsers.observe(getViewLifecycleOwner()) { users ->
+             val index = users.indexOfFirst { it.uid == task.assignPersonId }
+             if (index != -1) {
+                 mBinding.spinnerUser.setSelection(index) // +1 because of "Select User"
+             }
+         }*/
+
+
+
+        // Remark
+
+        // Completion Date
+
+
         val pos = task.status.ordinal
-        mBinding.spinnerStatus.setSelection(pos)
-        selectedStatus = task.status
+//        mBinding.actvStatus.setText(Status.entries[pos].name, false)
+        mViewModel.selectedStatus = task.status
+        mViewModel.observableTaskStatus.set(Status.entries[pos].toString())
         // user
-        mViewModel.allUsers.value?.let { users ->
-            val idx = users.indexOfFirst { it.uid == task.assignPersonId }
-            if (idx >= 0) mBinding.spinnerUser.setSelection(idx)
-            selectedUserId = task.assignPersonId
-        }
+        /*  mViewModel.allUsers.value?.let { users ->
+              val idx = users.indexOfFirst { it.uid == task.assignPersonId }
+              if (idx >= 0) mBinding.spinnerUser.setSelection(idx)
+              selectedUserId = task.assignPersonId
+          }*/
 
 
         // Store for update
@@ -265,6 +232,9 @@ class FragmentAdminTask : FragmentBase() {
 
     private val generalListener: GeneralListener = GeneralListener { view ->
         when (view?.id) {
+            R.id.actvAssignedUser ->{
+                mBinding.actvAssignedUser.showDropDown()
+            }
             R.id.btnCancel -> {
                 showConfirmationDialog((getString(R.string.text_cancel_task))) { dialog, which ->
                     getParentFragmentManager().popBackStack();
@@ -272,30 +242,66 @@ class FragmentAdminTask : FragmentBase() {
             }
 
             R.id.btnSave -> {
-                val title = mBinding.etTitle.text.toString().trim()
-                if (title.isEmpty() || selectedUserId == null) {
+
+//                mViewModel.saveTask()
+
+
+                if (mViewModel.observableTitle.isEmptyData || mViewModel.observableTaskAssignTo.isEmptyData) {
                     Toast.makeText(mActivity, "Title and user required", Toast.LENGTH_SHORT).show()
                     return@GeneralListener
                 }
-                val detail = mBinding.etDescription.text.toString().trim()
-                val remark = mBinding.etRemark.text.toString().trim().takeIf { it.isNotEmpty() }
 
                 val model = TaskModel(
                     id = if (isEdit) taskId else null,
-                    title = title,
-                    taskDetail = detail,
-                    assignPersonId = selectedUserId!!,
+                    title = mViewModel.observableTitle.trimmed,
+                    taskDetail = mViewModel.observableTaskDescription.trimmed,
+                    assignPersonId = mViewModel.observableTaskAssignTo.get(),
                     assignDate = selectedAssignDate,
                     completionDate = selectedCompleteDate,
-                    remark = remark,
-                    userRemark = taskModel.userRemark,
-                    status = selectedStatus,
+                    remark = mViewModel.observableTaskAdminRemark.get(),
+                    userRemark = mViewModel.taskModel.userRemark,
+                    status = mViewModel.selectedStatus,
                     createdBy = mViewModel.mSharePreference?.getString(R.string.prefUserId) ?: ""
 
                 )
                 mViewModel.addTask(model)
                 getParentFragmentManager().popBackStack();
             }
+
+            R.id.add_title -> {
+                bottomSheetAddTitle = BottomSheetAddTitle.newInstance(mViewModel)
+                bottomSheetAddTitle!!.show(
+                    mActivity!!.supportFragmentManager,
+                    BottomSheetAddTitle::class.java.getSimpleName()
+                )
+            }
+
+            R.id.cv_select_date -> {
+
+                mActivity?.let {
+                    Utils().openDatePicker(
+                        it,
+                    ) { millis, text ->
+                        selectedAssignDate = millis
+                        mViewModel.observableAssignDate.set(text)
+                    }
+                }
+
+            }
+
+            R.id.cv_select_complete_date -> {
+
+                mActivity?.let {
+                    Utils().openDatePicker(
+                        it, minDate = selectedAssignDate
+                    ) { millis, text ->
+                        selectedCompleteDate = millis
+                        mViewModel.observableCompleteDate.set(text)
+                    }
+                }
+
+            }
+
 
         }
     }

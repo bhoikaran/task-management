@@ -22,6 +22,7 @@
     <string name="update_task">Update Task</string>
     <string name="cancel">Cancel</string>
     <string name="task_assign_date">Task Assign Date</string>
+    <string name="task_date_formate">DD/MM/YYYY</string>
     <string name="task_completion_date">Task Completion Date</string>
     <string name="task_assigned_to">Task Assigned To</string>
     <string name="description">Description</string>
@@ -59,4 +60,13 @@
     <string name="delete_title">Delete Title</string>
     <string name="title_name">Title Name</string>
     <string name="ex_created_at_12_05_2025">Created at: 12/05/2025</string>
+    <string name="text_created_at">Created at</string>
+
+    <string name="text_alert">Alert</string>
+    <string name="text_ok">OK</string>
+    <string name="text_cancel">Cancel</string>
+    <string name="close">Close</string>
+    <string name="enter_title_name">Title name</string>
+    <string name="enter_task_title">Enter task title</string>
+    <string name="select_assigned_user">Select assigned user</string>
 </resources>
