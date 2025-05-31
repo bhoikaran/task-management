@@ -14,6 +14,12 @@
         <variable
             name="generalListener"
             type="com.example.taskmanagement.businesslogic.interactors.GeneralListener" />
+        <variable
+            name="spinnerItemSelectedListener"
+            type="android.widget.AdapterView.OnItemSelectedListener" />
+
+
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -150,11 +156,23 @@
                         android:layout_height="wrap_content"
                         android:text="@string/select_user" />
 
-                    <Spinner
+                    <!--<Spinner
                         android:id="@+id/spinnerUser"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:spinnerMode="dropdown" />
+                        android:spinnerMode="dropdown" />-->
+
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/spinnerUser"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/margin_four"
+                        android:layout_marginTop="@dimen/margin_four"
+                        android:background="@drawable/background_spinner_brown"
+                        android:foregroundTint="@color/color_hint"
+                        android:spinnerMode="dropdown"
+                        />
+
                 </LinearLayout>
 
                 <!-- Status Spinner -->
@@ -168,22 +186,32 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/select_status" />
-
+<!--
                     <Spinner
                         android:id="@+id/spinnerStatus"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:spinnerMode="dropdown" />
+                        android:spinnerMode="dropdown" />-->
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/spinnerStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/margin_four"
+                        android:layout_marginTop="@dimen/margin_four"
+                        android:background="@drawable/background_spinner_brown"
+                        android:foregroundTint="@color/color_hint"
+                        android:spinnerMode="dropdown"
+                        />
                 </LinearLayout>
 
                 <!-- Apply Button -->
-                <Button
+               <!-- <Button
                     android:id="@+id/btnApplyFilters"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:onClick="@{generalListener::onClick}"
-                    android:text="@string/apply" />
+                    android:text="@string/apply" />-->
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -257,6 +285,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
+            tools:visibility="gone"
             android:text="@string/no_records_found"
             android:visibility="@{viewModel.observerNoRecords == 2 ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -264,7 +293,12 @@
             tools:layout_editor_absoluteX="16dp"
 
             />
-
+        <ProgressBar
+            style="@style/progressBarCentre"
+            android:visibility="@{viewModel.observableProgressBar?View.VISIBLE:View.GONE}"
+            tools:ignore="MissingConstraints"
+            tools:visibility="gone"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
 

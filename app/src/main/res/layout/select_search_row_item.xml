@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="currentPosition"
+            type="Integer" />
+
+        <variable
+            name="listener"
+            type="com.example.taskmanagement.businesslogic.interactors.GeneralItemListener" />
+
+        <variable
+            name="pojo"
+            type="com.example.taskmanagement.businesslogic.model.PojoDialogSearch" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/linear_audio_selection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_marginTop="@dimen/margin_sixteen"
+        android:layout_marginStart="@dimen/margin_fourteen"
+        android:layout_marginEnd="@dimen/margin_fourteen"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/margin_eight"
+            android:orientation="horizontal">
+
+
+            <RadioButton
+                android:id="@+id/audio_radiobutton"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:button="@drawable/drawable_radio_button"
+                android:paddingStart="@dimen/margin_twelve"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/textsize_sixteen"
+                android:textAlignment="viewStart"
+                android:text="@{pojo.title}"
+                android:onClick="@{(v) -> listener.onItemClick(v, currentPosition, pojo)}"
+               />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/margin_sixteen"
+            android:layout_marginStart="@dimen/margin_eight"
+            android:layout_marginEnd="@dimen/margin_eight"
+            android:background="@color/color_gray_light"/>
+
+    </LinearLayout>
+
+</layout>

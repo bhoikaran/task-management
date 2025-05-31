@@ -4,153 +4,147 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="android.view.View" />
+
         <variable
             name="viewModel"
             type="com.example.taskmanagement.businesslogic.viewmodel.UserTaskViewModel" />
+
         <variable
             name="onClickNavHeader"
             type="android.view.View.OnClickListener" />
+
         <variable
             name="generalListener"
             type="com.example.taskmanagement.businesslogic.interactors.GeneralListener" />
+
         <variable
             name="onNavigationItemSelectedListener"
             type="com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener" />
     </data>
-    <LinearLayout
+
+   <!-- <LinearLayout
         android:orientation="vertical"
+        android:background="@drawable/task_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="16dp"
-            android:background="?android:attr/windowBackground">
+            android:padding="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <androidx.cardview.widget.CardView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="8dp"
-                    android:layout_marginTop="20dp"
-                    app:cardBackgroundColor="@android:color/white">
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-                    <LinearLayout
+                    &lt;!&ndash; Title &ndash;&gt;
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
+                        android:hint="@string/title"
+                        android:layout_marginBottom="12dp">
 
-                        <!-- Title -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etTitle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="@string/title"
-                            android:layout_marginBottom="12dp">
+                            android:enabled="false"
+                            android:inputType="textCapSentences" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etTitle"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:enabled="false"
-                                android:inputType="textCapSentences" />
-                        </com.google.android.material.textfield.TextInputLayout>
+                    &lt;!&ndash; Description &ndash;&gt;
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/description"
+                        android:layout_marginBottom="12dp">
 
-                        <!-- Description -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:inputType="textMultiLine"
+                            android:enabled="false"
+                            android:gravity="top" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+                    &lt;!&ndash; Assign Date &ndash;&gt;
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/task_assign_date"
+                        android:layout_marginBottom="16dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/tvAssignDate"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="@string/description"
-                            android:layout_marginBottom="12dp">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etDescription"
-                                android:layout_width="match_parent"
-                                android:layout_height="120dp"
-                                android:inputType="textMultiLine"
-                                android:enabled="false"
-                                android:gravity="top" />
-                        </com.google.android.material.textfield.TextInputLayout>
+                            android:focusable="false"
+                            android:clickable="false"
+                            android:inputType="none"
+                            android:enabled="false"
+                            android:cursorVisible="false"
+                            android:textColor="@android:color/black"
+                            android:background="@null"
+                            android:importantForAccessibility="yes" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
 
-                        <!-- Assign Date -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    &lt;!&ndash; Completion Date &ndash;&gt;
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/task_completion_date"
+                        android:visibility="@{viewModel.editMode ? View.VISIBLE : View.GONE}"
+                        android:layout_marginBottom="16dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/tvPickCompleteDate"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="@string/task_assign_date"
-                            android:layout_marginBottom="16dp">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/tvAssignDate"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:focusable="false"
-                                android:clickable="false"
-                                android:inputType="none"
-                                android:enabled="false"
-                                android:cursorVisible="false"
-                                android:textColor="@android:color/black"
-                                android:background="@null"
-                                android:importantForAccessibility="yes"/>
-                        </com.google.android.material.textfield.TextInputLayout>
+                            android:focusable="false"
+                            android:clickable="true"
+                            android:inputType="none"
+                            android:cursorVisible="false"
+                            android:textColor="@android:color/black"
+                            android:background="@null"
+                            android:importantForAccessibility="yes" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
 
+                    &lt;!&ndash; Remark &ndash;&gt;
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/remarks"
+                        android:layout_marginBottom="12dp"
+                        android:visibility="@{viewModel.editMode ? View.VISIBLE : View.GONE}">
 
-                        <!-- Completion Date -->
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etRemark"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/task_completion_date"
-                            android:visibility="@{viewModel.editMode ? View.VISIBLE : View.GONE}"
-                            android:layout_marginBottom="16dp">
+                            android:layout_height="120dp"
+                            android:gravity="top"
+                            android:inputType="textMultiLine" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/tvPickCompleteDate"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:focusable="false"
-                                android:clickable="true"
-                                android:inputType="none"
-                                android:cursorVisible="false"
-                                android:textColor="@android:color/black"
-                                android:background="@null"
-                                android:importantForAccessibility="yes"/>
-                        </com.google.android.material.textfield.TextInputLayout>
-
-
-                        <!-- Remark -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/remarks"
-                            android:layout_marginBottom="12dp"
-                            android:visibility="@{viewModel.editMode ? View.VISIBLE : View.GONE}">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etRemark"
-                                android:layout_width="match_parent"
-                                android:layout_height="120dp"
-                                android:gravity="top"
-                                android:inputType="textMultiLine" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/bottomButtons"
@@ -198,14 +192,342 @@
                 </LinearLayout>
 
 
-
             </LinearLayout>
-
 
 
         </ScrollView>
 
-    </LinearLayout>
+    </LinearLayout>-->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/task_background"
+        app:showSnackBarInt="@{viewModel.observerSnackBarInt}"
+        app:showSnackBarString="@{viewModel.observerSnackBarString}">
+
+
+        <LinearLayout
+            android:id="@+id/ll_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_ten"
+            android:clipToPadding="false"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="@dimen/margin_ten"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/backArrow"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+
+                android:foreground="?attr/selectableItemBackground"
+                android:onClick="@{generalListener::onClick}"
+                android:src="@drawable/arrow_back" />
+            <!--
+                    <TextView
+                        android:id="@+id/tvTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:text="@string/add_task"
+                        android:textColor="@android:color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />-->
+        </LinearLayout>
+
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ll_header">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/margin_fifty"
+
+                    android:backgroundTint="@android:color/white"
+                    app:cardCornerRadius="@dimen/margin_eight"
+                    app:cardElevation="2dp">
+
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/atvTextTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/margin_ten"
+                        android:background="@null"
+                        android:drawableEnd="@drawable/arrow_bottom"
+                        android:hint="@string/enter_task_title"
+                        android:padding="@dimen/margin_eight"
+                        android:singleLine="true"
+                        android:enabled="false"
+                        android:text="@={viewModel.observableTitle}"
+                        android:textAppearance="@style/TextAppearance.App.Quicksand.Regular.12"
+                        android:textColorHint="@color/color_grey"
+                        android:textStyle="bold" />
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_twenty"
+                    android:backgroundTint="@android:color/white"
+                    app:cardCornerRadius="@dimen/margin_eight"
+                    app:cardElevation="2dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_ten"
+                        android:background="@null"
+                        android:gravity="top|start"
+                        android:hint="@string/description"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:maxLines="6"
+                        android:minLines="4"
+                        android:padding="@dimen/margin_eight"
+                        android:enabled="false"
+                        android:singleLine="false"
+                        android:text="@={viewModel.observableTaskDescription}"
+                        android:textAlignment="textStart"
+                        android:textAppearance="@style/TextAppearance.App.Quicksand.Regular.12"
+                        android:textColorHint="@color/color_grey"
+                        android:textStyle="bold" />
+
+                </androidx.cardview.widget.CardView>
+
+                <!--<androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/margin_fifty"
+                   android:backgroundTint="@android:color/white"
+                    app:cardCornerRadius="@dimen/margin_eight"
+                    android:layout_marginTop="@dimen/margin_twenty"
+                    app:cardElevation="2dp">
+
+
+                    <Spinner
+                        android:id="@+id/spinnerUser"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/margin_ten"
+                        android:background="@drawable/background_spinner_brown"
+                        android:hint="@string/enter_task_title"
+                        android:padding="@dimen/margin_eight"
+
+                        android:textAppearance="@style/TextAppearance.App.Quicksand.Regular.12"
+                        android:textColorHint="@color/color_grey"
+                        android:textStyle="bold"
+                        />
+                </androidx.cardview.widget.CardView>-->
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:paddingEnd="@dimen/margin_twelve">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="@dimen/margin_twenty"
+                            android:layout_marginBottom="@dimen/margin_ten"
+                            android:text="@string/task_assign_date"
+                            android:textAppearance="@style/TextAppearance.App.Quicksand.Bold.14"
+                            android:textColor="@color/color_grey"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cv_select_date"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/margin_forty"
+                            android:backgroundTint="@android:color/white"
+                            android:padding="@dimen/margin_ten"
+                            app:cardCornerRadius="@dimen/margin_eight"
+                            app:cardElevation="2dp">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="@dimen/margin_ten"
+                                android:background="@null"
+                                android:hint="@string/task_date_formate"
+                                android:padding="@dimen/margin_eight"
+                                android:singleLine="true"
+                                android:text="@={viewModel.observableAssignDate}"
+                                android:textAppearance="@style/TextAppearance.App.Quicksand.Regular.12"
+                                android:textColorHint="@color/color_grey"
+                                android:textStyle="bold"
+                                app:drawableEndCompat="@drawable/task_date" />
+                        </androidx.cardview.widget.CardView>
+
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:paddingStart="@dimen/margin_twelve"
+                        android:visibility="@{viewModel.editMode ? View.VISIBLE : View.GONE}">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="@dimen/margin_twenty"
+                            android:layout_marginBottom="@dimen/margin_ten"
+                            android:text="@string/task_completion_date"
+                            android:textAppearance="@style/TextAppearance.App.Quicksand.Bold.14"
+                            android:textColor="@color/color_grey"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cv_select_complete_date"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/margin_forty"
+                            android:backgroundTint="@android:color/white"
+                            android:onClick="@{generalListener::onClick}"
+                            android:padding="@dimen/margin_ten"
+                            app:cardCornerRadius="@dimen/margin_eight"
+                            app:cardElevation="2dp">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="@dimen/margin_ten"
+                                android:background="@null"
+                                android:hint="@string/task_date_formate"
+                                android:padding="@dimen/margin_eight"
+                                android:singleLine="true"
+                                android:text="@={viewModel.observableCompleteDate}"
+                                android:textAppearance="@style/TextAppearance.App.Quicksand.Regular.12"
+                                android:textColorHint="@color/color_grey"
+                                android:textStyle="bold"
+                                app:drawableEndCompat="@drawable/task_date" />
+                        </androidx.cardview.widget.CardView>
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_twenty"
+                    android:backgroundTint="@android:color/white"
+                    android:visibility="@{viewModel.editMode ? View.VISIBLE : View.GONE}"
+                    app:cardCornerRadius="@dimen/margin_eight"
+                    app:cardElevation="2dp">
+
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_ten"
+                        android:background="@null"
+                        android:gravity="top|start"
+                        android:hint="@string/remark"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:maxLines="6"
+                        android:minLines="4"
+                        android:padding="@dimen/margin_eight"
+                        android:singleLine="false"
+                        android:text="@={viewModel.observableTaskUserRemark}"
+                        android:textAlignment="textStart"
+                        android:textAppearance="@style/TextAppearance.App.Quicksand.Regular.12"
+                        android:textColorHint="@color/color_grey"
+                        android:textStyle="bold" />
+
+
+                </androidx.cardview.widget.CardView>
+
+
+
+                <!-- Buttons -->
+                <LinearLayout
+                    android:id="@+id/bottomButtons"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_twenty"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="@dimen/margin_ten"
+                    android:weightSum="2"
+
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnCancel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_button_cancel"
+                        android:gravity="center"
+                        android:onClick="@{generalListener::onClick}"
+                        android:paddingVertical="14dp"
+                        android:text="@string/cancel"
+                        android:textAllCaps="false"
+                        android:textColor="#C94C67"
+                        android:textStyle="bold" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnSave"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_button_confirm"
+                        android:gravity="center"
+                        android:onClick="@{generalListener::onClick}"
+                        android:paddingVertical="14dp"
+                        android:text="@{viewModel.editMode ? @string/update_task : @string/save_task}"
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold"
+                        tools:text="@string/save_task" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
 </layout>
 
 

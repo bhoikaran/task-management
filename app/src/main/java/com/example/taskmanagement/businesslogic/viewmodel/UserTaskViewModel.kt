@@ -9,6 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.example.taskmanagement.MyApplication
+import com.example.taskmanagement.businesslogic.interactors.ObservableString
+import com.example.taskmanagement.businesslogic.model.Status
 import com.example.taskmanagement.businesslogic.model.TaskModel
 import com.example.taskmanagement.repository.FirestoreTaskRepository
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +19,20 @@ import kotlinx.coroutines.tasks.await
 
 
 class UserTaskViewModel(mApplication: MyApplication) : ViewModelBase(mApplication) {
+
+
+
+
+    var observableTitle = ObservableString("")
+    var observableTaskDescription = ObservableString("")
+    var observableTaskAssignTo = ObservableString("")
+    var observableTaskAssignToUid = ObservableString("")
+    var observableTaskStatus = ObservableString("")
+    var selectedStatus: Status = Status.IN_PROGRESS
+    var observableAssignDate = ObservableString("")
+    var observableCompleteDate = ObservableString("")
+    var observableTaskAdminRemark = ObservableString("")
+    var observableTaskUserRemark = ObservableString("")
 
 
     // Filtered tasks

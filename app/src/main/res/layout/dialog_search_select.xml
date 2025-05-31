@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="com.example.taskmanagement.view.dialogsearchselect.ViewModelDialogSearch" />
+
+        <variable
+            name="listenerGeneralClick"
+            type="com.example.taskmanagement.businesslogic.interactors.GeneralListener" />
+
+        <variable
+            name="generalItemListener"
+            type="com.example.taskmanagement.businesslogic.interactors.GeneralItemListener" />
+
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/primary"
+                android:gravity="center"
+                android:padding="@dimen/margin_fourteen"
+                android:text="@{viewModel.observableTitle}"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/font_twentytwo" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/search_year_lay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/margin_sixteen"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/editText_search_dialog"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/drawable_search_bar_background"
+                    android:drawableEnd="@drawable/ic_search_vector"
+                    android:drawablePadding="@dimen/margin_eight"
+                    android:hint="@string/text_search"
+                    android:imeOptions="actionSearch"
+                    android:onClick="@{(v) -> listenerGeneralClick.onClick(v)}"
+                    android:padding="@dimen/margin_ten"
+                    android:singleLine="true"
+                    android:text="@={viewModel.observableSearch}"
+                    android:textColorHint="@color/color_grey"
+                    android:textSize="@dimen/textsize_sixteen"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recylarview_search_list"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                app:adapterDialogSearch="@{viewModel.observableSearchList}"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:listenerDialogSearch="@{generalItemListener}"
+                tools:listitem="@layout/select_search_row_item" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/empty_records"
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:visibility="@{viewModel.observerIsNoRecords ? View.VISIBLE:View.GONE}" />
+
+           <!-- <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/button_location_select"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_ten"
+                    android:layout_marginTop="@dimen/margin_twenty"
+                    android:layout_marginRight="@dimen/margin_twenty"
+                    android:layout_marginBottom="@dimen/margin_sixteen"
+                    android:background="@drawable/bg_button_confirm"
+                    android:onClick="@{(v) -> listenerGeneralClick.onClick(v)}"
+                    android:text="@string/text_done"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/font_eighteen"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/button_location_cancel"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/button_location_cancel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_twenty"
+                    android:layout_marginTop="@dimen/margin_twenty"
+                    android:layout_marginRight="@dimen/margin_ten"
+                    android:layout_marginBottom="@dimen/margin_sixteen"
+                    android:background="@drawable/bg_white_corner_soft"
+                    android:onClick="@{(v) -> listenerGeneralClick.onClick(v)}"
+                    android:text="@string/text_cancel"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorGreyText"
+                    android:textSize="@dimen/font_eighteen"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/button_location_select"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+
+            <LinearLayout
+                android:id="@+id/bottomButtons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_twenty"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="@dimen/margin_ten"
+                android:weightSum="2"
+
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnAlertCancel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_button_cancel"
+                    android:gravity="center"
+                    android:onClick="@{(v) -> listenerGeneralClick.onClick(v)}"
+                    android:paddingVertical="14dp"
+                    android:text="@string/cancel"
+                    android:textAllCaps="false"
+                    android:textColor="#C94C67"
+                    android:textStyle="bold" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnAlertSave"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_button_confirm"
+                    android:gravity="center"
+                    android:onClick="@{(v) -> listenerGeneralClick.onClick(v)}"
+                    android:paddingVertical="14dp"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:text="@string/text_done" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressbarCenter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="@dimen/margin_ten"
+            android:visibility="@{viewModel.observerProgressBar ? View.VISIBLE:View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="MissingConstraints" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

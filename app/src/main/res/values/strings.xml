@@ -19,6 +19,7 @@
     <string name="text_delete_item">You Want to Delete Item ?</string>
     <string name="text_logout">You Want to Logout ?</string>
     <string name="save_task">Save Task</string>
+    <string name="text_done">Done</string>
     <string name="update_task">Update Task</string>
     <string name="cancel">Cancel</string>
     <string name="task_assign_date">Task Assign Date</string>
@@ -34,7 +35,7 @@
     <string name="text_description">Description :</string>
     <string name="assigned_to">Assigned To:</string>
     <string name="task_title">Task Title:</string>
-    <string name="remark">Remark:</string>
+    <string name="remark">Remark</string>
     <string name="status">Status:</string>
     <string name="export">Export</string>
     <string name="my_team">My Team</string>
@@ -69,4 +70,5 @@
     <string name="enter_title_name">Title name</string>
     <string name="enter_task_title">Enter task title</string>
     <string name="select_assigned_user">Select assigned user</string>
+    <string name="text_search">Search</string>
 </resources>

@@ -1,6 +1,8 @@
 package com.example.taskmanagement.businesslogic.viewmodel
 
 import android.content.Context
+import android.util.Log
+import androidx.databinding.ObservableArrayList
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.LiveData
@@ -12,6 +14,7 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.example.taskmanagement.MyApplication
 import com.example.taskmanagement.businesslogic.interactors.ObservableString
+import com.example.taskmanagement.businesslogic.model.PojoDialogSearch
 import com.example.taskmanagement.businesslogic.model.Status
 import com.example.taskmanagement.businesslogic.model.TaskModel
 import com.example.taskmanagement.businesslogic.model.TitleModel
@@ -22,18 +25,21 @@ import kotlinx.coroutines.tasks.await
 
 
 class AdminTaskViewModel(mApplication: MyApplication) : ViewModelBase(mApplication) {
-     var taskModel: TaskModel = TaskModel()
+    var taskModel: TaskModel = TaskModel()
 
     var observableTitle = ObservableString("")
     var observableTaskDescription = ObservableString("")
     var observableTaskAssignTo = ObservableString("")
     var observableTaskAssignToUid = ObservableString("")
     var observableTaskStatus = ObservableString("")
-    var selectedStatus :Status = Status.IN_PROGRESS
+    var selectedStatus: Status = Status.IN_PROGRESS
     var observableAssignDate = ObservableString("")
     var observableCompleteDate = ObservableString("")
     var observableTaskAdminRemark = ObservableString("")
     var observableTaskUserRemark = ObservableString("")
+    var observableSearchDataList: ObservableArrayList<PojoDialogSearch> =
+        ObservableArrayList<PojoDialogSearch>()
+    lateinit var  users: ObservableArrayList<UserModel>
 
     // Expose non-admin users
     val allUsers: LiveData<List<UserModel>> = repo
@@ -73,7 +79,6 @@ class AdminTaskViewModel(mApplication: MyApplication) : ViewModelBase(mApplicati
         }
 
     init {
-        // Whenever filters change, reload the tasks
         MediatorLiveData<Unit>().apply {
             addSource(userFilter) { loadTasks(mApplication) }
             addSource(statusFilter) { loadTasks(mApplication) }
@@ -83,15 +88,16 @@ class AdminTaskViewModel(mApplication: MyApplication) : ViewModelBase(mApplicati
 
     /** Load tasks from Firestore according to current filters */
     private fun loadTasks(context: Context) {
+        observableProgressBar.set(true)
         viewModelScope.launch(Dispatchers.IO) {
             repo.getTasksFlow(context, userFilter.value, statusFilter.value)
                 .collect { list ->
                     _filteredTasks.postValue(list)
                     observerNoRecords.set(if (list.isEmpty()) 2 else 1)
+                    observableProgressBar.set(false)
                 }
         }
     }
-
 
 
     /** Fetch one task by ID (for edit) */
@@ -111,5 +117,37 @@ class AdminTaskViewModel(mApplication: MyApplication) : ViewModelBase(mApplicati
 
     fun getUserNameById(userId: String?): String {
         return allUsers.value?.firstOrNull { it.uid == userId }?.name ?: ""
+    }
+
+    fun addAlertSearchItem(flag: Int) {
+
+        observableSearchDataList.clear()
+        if (flag == 1) {
+            val users = allUsers.value
+            users?.forEach { user ->
+                val pojo = PojoDialogSearch(
+                    title = user.name,
+                    id = user.uid,
+                    codeValue = user.email,
+                    is_checked = false
+                )
+                Log.d("Tag", "observableSearchDataList : ${user.name}")
+                observableSearchDataList.add(pojo)
+            }
+            Log.d("Tag", "observableSearchDataList : ${observableSearchDataList.size}")
+
+        } else if (flag == 2) {
+            Status.entries.forEach { status ->
+                val pojo = PojoDialogSearch(
+                    title = status.name.replace("_", " ").lowercase()
+                        .replaceFirstChar { it.uppercase() },
+                    id = status.name,
+                    codeValue = "",
+                    is_checked = false
+                )
+                observableSearchDataList.add(pojo)
+            }
+        }
+
     }
 }

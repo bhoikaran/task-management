@@ -15,8 +15,8 @@ class LoginViewModel(mApplication: MyApplication) : ViewModelBase(mApplication) 
     val loginResult: LiveData<Result<UserModel>> = _loginResult
 
     // bound via DataBinding
-    var observableEmail: ObservableString = ObservableString("kbhoi775@gmail.com")
-//    var observableEmail: ObservableString = ObservableString("bhoikaran135@gmail.com")
+//    var observableEmail: ObservableString = ObservableString("kbhoi775@gmail.com")
+    var observableEmail: ObservableString = ObservableString("bhoikaran135@gmail.com")
 //    var observableEmail: ObservableString = ObservableString("hellobhoikaran@gmail.com")
     var observablePassword: ObservableString = ObservableString("admin@123")
 

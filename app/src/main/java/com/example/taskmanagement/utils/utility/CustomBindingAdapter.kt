@@ -2,10 +2,8 @@ package com.example.taskmanagement.utils.utility
 
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.text.Html
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -21,9 +19,10 @@ import com.bumptech.glide.Glide
 import com.example.taskmanagement.R
 import com.example.taskmanagement.businesslogic.interactors.GeneralItemListener
 import com.example.taskmanagement.businesslogic.interactors.ObservableString
+import com.example.taskmanagement.businesslogic.model.PojoDialogSearch
 import com.example.taskmanagement.businesslogic.model.Status
 import com.example.taskmanagement.utils.Util
-import com.google.android.material.textfield.TextInputLayout
+import com.example.taskmanagement.view.adapter.AdapterDialogSearch
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -106,6 +105,28 @@ object CustomBindingAdapter {
         } ?: run {
             textView.text = ""
         }
+    }
+    fun setLayoutManagerAdapter(
+        recyclerView: RecyclerView,
+        adapter: RecyclerView.Adapter<*>?,
+        orientation: Int
+    ) {
+        recyclerView.setAdapter(adapter)
+        val linearLayoutManager =
+            LinearLayoutManager(recyclerView.context, orientation, false)
+        recyclerView.setLayoutManager(linearLayoutManager)
+    }
+
+    @JvmStatic
+    @SuppressLint("NotifyDataSetChanged")
+    @BindingAdapter(value = ["adapterDialogSearch", "listenerDialogSearch"])
+    fun setAdapterDialogSearch(
+        recyclerView: RecyclerView,
+        listData: ObservableArrayList<PojoDialogSearch>,
+        listener: GeneralItemListener
+    ) {
+        val adapter  = AdapterDialogSearch(listData, listener)
+        setLayoutManagerAdapter(recyclerView, adapter, LinearLayoutManager.VERTICAL)
     }
 
 /*

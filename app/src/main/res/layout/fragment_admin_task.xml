@@ -162,6 +162,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/margin_ten"
                         android:background="@null"
+                        android:gravity="top|start"
                         android:hint="@string/description"
                         android:inputType="textMultiLine|textCapSentences"
                         android:maxLines="6"
@@ -173,6 +174,7 @@
                         android:textAppearance="@style/TextAppearance.App.Quicksand.Regular.12"
                         android:textColorHint="@color/color_grey"
                         android:textStyle="bold" />
+
                 </androidx.cardview.widget.CardView>
 
                 <!--<androidx.cardview.widget.CardView
@@ -233,15 +235,15 @@
                         android:layout_marginStart="@dimen/margin_ten"
                         android:background="@null"
                         android:clickable="true"
-                        android:onClick="@{generalListener::onClick}"
                         android:cursorVisible="false"
                         android:drawableEnd="@drawable/arrow_bottom"
                         android:focusable="false"
                         android:focusableInTouchMode="false"
                         android:hint="@string/select_assigned_user"
                         android:inputType="none"
-                        android:text="@={viewModel.observableTaskAssignTo}"
+                        android:onClick="@{generalListener::onClick}"
                         android:padding="@dimen/margin_eight"
+                        android:text="@={viewModel.observableTaskAssignTo}"
                         android:textAppearance="@style/TextAppearance.App.Quicksand.Regular.12"
                         android:textColorHint="@color/color_grey"
                         android:textStyle="bold" />
@@ -363,11 +365,13 @@
                     app:cardCornerRadius="@dimen/margin_eight"
                     app:cardElevation="2dp">
 
+
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/margin_ten"
                         android:background="@null"
+                        android:gravity="top|start"
                         android:hint="@string/remark"
                         android:inputType="textMultiLine|textCapSentences"
                         android:maxLines="6"
@@ -379,6 +383,8 @@
                         android:textAppearance="@style/TextAppearance.App.Quicksand.Regular.12"
                         android:textColorHint="@color/color_grey"
                         android:textStyle="bold" />
+
+
                 </androidx.cardview.widget.CardView>
 
 
@@ -391,12 +397,14 @@
                     app:cardCornerRadius="@dimen/margin_eight"
                     app:cardElevation="2dp">
 
+
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/margin_ten"
                         android:background="@null"
                         android:enabled="false"
+                        android:gravity="top|start"
                         android:hint="@string/user_remarks"
                         android:inputType="textMultiLine|textCapSentences"
                         android:maxLines="6"
@@ -404,9 +412,12 @@
                         android:padding="@dimen/margin_eight"
                         android:singleLine="false"
                         android:text="@={viewModel.observableTaskUserRemark}"
+                        android:textAlignment="textStart"
                         android:textAppearance="@style/TextAppearance.App.Quicksand.Regular.12"
                         android:textColorHint="@color/color_grey"
                         android:textStyle="bold" />
+
+
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
@@ -431,6 +442,7 @@
                         android:hint="@string/select_status"
                         android:inputType="none"
                         android:padding="@dimen/margin_eight"
+                        android:onClick="@{generalListener::onClick}"
                         android:text="@={viewModel.observableTaskStatus}"
                         android:textAppearance="@style/TextAppearance.App.Quicksand.Regular.12"
                         android:textColorHint="@color/color_grey"

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
@@ -60,7 +61,7 @@ open class BaseActivity : AppCompatActivity() {
                 }
             }
         }
-    open fun exportExcel(taskList: List<TaskModel>, users: List<UserModel>) {
+  /*  open fun exportExcel(taskList: List<TaskModel>, users: List<UserModel>) {
 
 
         if (taskList.isNotEmpty() && users.isNotEmpty()) {
@@ -96,6 +97,41 @@ open class BaseActivity : AppCompatActivity() {
 
 
 
+    }
+*/
+
+    open fun exportExcel(taskList: List<TaskModel>, users: List<UserModel>) {
+        if (taskList.isNotEmpty() && users.isNotEmpty()) {
+            try {
+                workbookToExport = ExportToExcel().createExcelWorkbook(taskList, users)
+                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    putExtra(
+                        Intent.EXTRA_TITLE,
+                        "Tasks_${Utils().formatDate(System.currentTimeMillis())}.xlsx"
+                    )
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    (exportLauncher as androidx.activity.result.ActivityResultLauncher<Intent>).launch(intent)
+                } else {
+                    requestPermissions(
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        REQUEST_CODE_STORAGE_PERMISSION
+                    )
+                }
+            } catch (e: Exception) {
+                Toast.makeText(
+                    this,
+                    "Error creating Excel: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+                Log.e("ExcelExport", "Error creating workbook", e)
+            }
+        } else {
+            Toast.makeText(this, "No data to export", Toast.LENGTH_LONG).show()
+        }
     }
 
     override fun onRequestPermissionsResult(

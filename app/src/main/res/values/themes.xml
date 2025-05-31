@@ -45,6 +45,19 @@
         <item name="android:textColor">@color/colorTextSecondary</item>
     </style>
 
+    <style name="progressBarCentre">
+        <item name="android:layout_width">@dimen/progressbar_center</item>
+        <item name="android:layout_height">@dimen/progressbar_center</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:elevation">@dimen/margin_sixteen</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
+        <item name="layout_constraintLeft_toLeftOf">parent</item>
+        <item name="layout_constraintRight_toRightOf">parent</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
+    </style>
+
 
     <style name="Widget.App.Chip.Outlined" parent="Widget.MaterialComponents.Chip.Filter">
         <item name="chipStrokeColor">?attr/colorOnSurface</item>

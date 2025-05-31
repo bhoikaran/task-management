@@ -62,7 +62,11 @@
     <color name="quantum_blue">#00F0FF</color>
     <color name="quantum_purple">#FF00F0</color>
     <color name="space_black">#0A0A14</color>
-
+    <color name="colorAccent">#034EA2</color>
 
     <color name="color_field_bg">#F6F4FA</color>
+    <color name="color_gray_light">#D4D4D4</color>
+    <color name="color_tab_background">#EDEEF6</color>
+    <color name="color_hint">#B4B4B4</color>
+
 </resources>

@@ -6,11 +6,9 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -70,6 +68,7 @@ class AdminHomeFragment : FragmentBase() {
         mViewModel = AdminViewModel(requireActivity().applicationContext as MyApplication)
         mBinding.viewModel = mViewModel
         mBinding.generalListener = generalListener
+        mBinding.spinnerItemSelectedListener = onItemSelectedListener
         mBinding.lifecycleOwner = viewLifecycleOwner
         (requireActivity() as AppCompatActivity)
             .setSupportActionBar(mBinding.topAppBar)
@@ -172,6 +171,10 @@ class AdminHomeFragment : FragmentBase() {
         ).apply {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
+
+        mBinding.spinnerUser.onItemSelectedListener = onItemSelectedListener
+        mBinding.spinnerStatus.onItemSelectedListener = onItemSelectedListener
+
     }
 
     private val generalListener: GeneralListener = GeneralListener { view ->
@@ -183,11 +186,7 @@ class AdminHomeFragment : FragmentBase() {
             )
 
             R.id.btnApplyFilters -> {
-                val uPos = mBinding.spinnerUser.selectedItemPosition
-                val userId = userIds.getOrNull(uPos)
-                val sPos = mBinding.spinnerStatus.selectedItemPosition
-                val status = if (sPos == 0) null else Status.entries[sPos - 1].name
-                mViewModel.applyFilters(userId, status)
+
             }
 
             R.id.exportToExcel -> {
@@ -234,12 +233,32 @@ class AdminHomeFragment : FragmentBase() {
         }
     }
 
+
+    private val onItemSelectedListener: AdapterView.OnItemSelectedListener =
+        object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(adapterView: AdapterView<*>, view: View?, i: Int, l: Long) {
+                if (adapterView.id == R.id.spinnerUser) {
+                  changeFilter()
+                } else if (adapterView.id == R.id.spinnerStatus) {
+                    changeFilter()
+                }
+            }
+
+            override fun onNothingSelected(adapterView: AdapterView<*>?) {
+            }
+        }
+
+
+    fun changeFilter(){
+        val uPos = mBinding.spinnerUser.selectedItemPosition
+        val userId = userIds.getOrNull(uPos)
+        val sPos = mBinding.spinnerStatus.selectedItemPosition
+        val status = if (sPos == 0) null else Status.entries[sPos - 1].name
+        mViewModel.applyFilters(userId, status)
+    }
+
     companion object {
         const val REQUEST_CODE_STORAGE_PERMISSION = 200
 
     }
 }
-
-
-
-
