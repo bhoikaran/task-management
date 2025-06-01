@@ -32,9 +32,14 @@
         <variable
             name="handler"
             type="com.example.taskmanagement.businesslogic.interactors.GeneralItemListener" />
+        <variable
+            name="longClick"
+            type="com.example.taskmanagement.businesslogic.interactors.GeneralItemListener" />
     </data>
 
+
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cv_task_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
@@ -251,10 +256,17 @@
                     android:id="@+id/imageview_delete"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-
+                    android:layout_marginEnd="12dp"
                     android:onClick="@{(v) -> handler.onItemClick(v, currentPosition, task)}"
                     android:visibility="@{ isAdmin ? View.VISIBLE :View.GONE}"
                     app:srcCompat="@mipmap/delete" />
+                <ImageView
+                    android:id="@+id/imageview_share"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:onClick="@{(v) -> handler.onItemClick(v, currentPosition, task)}"
+                    android:visibility="@{ isAdmin ? View.VISIBLE :View.GONE}"
+                    app:srcCompat="@mipmap/share" />
 
             </LinearLayout>
 

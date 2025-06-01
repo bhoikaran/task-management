@@ -20,6 +20,7 @@
     <string name="text_logout">You Want to Logout ?</string>
     <string name="save_task">Save Task</string>
     <string name="text_done">Done</string>
+    <string name="text_all">All</string>
     <string name="update_task">Update Task</string>
     <string name="cancel">Cancel</string>
     <string name="task_assign_date">Task Assign Date</string>

@@ -94,6 +94,7 @@
                     android:paddingStart="10dp"
                     android:paddingEnd="20dp"
                     android:text="@string/add_title"
+                    android:textAppearance="@style/TextAppearance.App.Quicksand.Bold.14"
                     app:drawableTint="@color/black"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

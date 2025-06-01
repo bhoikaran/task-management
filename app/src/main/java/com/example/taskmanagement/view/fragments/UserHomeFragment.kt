@@ -15,6 +15,7 @@ import com.example.taskmanagement.MyApplication
 import com.example.taskmanagement.R
 import com.example.taskmanagement.businesslogic.interactors.GeneralItemListener
 import com.example.taskmanagement.businesslogic.interactors.GeneralListener
+import com.example.taskmanagement.businesslogic.model.PojoDialogSearch
 import com.example.taskmanagement.businesslogic.model.Status
 import com.example.taskmanagement.businesslogic.model.TaskModel
 import com.example.taskmanagement.businesslogic.viewmodel.AdminViewModel
@@ -22,6 +23,7 @@ import com.example.taskmanagement.businesslogic.viewmodel.UserViewModel
 import com.example.taskmanagement.databinding.FragmentAdminHomeBinding
 import com.example.taskmanagement.databinding.FragmentUserHomeBinding
 import com.example.taskmanagement.view.adapter.TaskAdapter
+import com.example.taskmanagement.view.dialogsearchselect.AlertDialogSearch
 import com.google.firebase.auth.FirebaseAuth
 import kotlin.collections.get
 
@@ -30,6 +32,10 @@ class UserHomeFragment : FragmentBase() {
     private lateinit var mViewModel: UserViewModel
     private lateinit var adapterTask: TaskAdapter
     val currentUser = FirebaseAuth.getInstance().currentUser
+
+    private var alertDialogSearch: AlertDialogSearch? = null
+    private lateinit var pojoSearchSelect: PojoDialogSearch
+    private var dialogFlag = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,7 +89,7 @@ class UserHomeFragment : FragmentBase() {
 
     private fun initComponents() {
         setupRecyclerView()
-        setupFilters()
+//        setupFilters()
 
     }
 
@@ -109,38 +115,96 @@ class UserHomeFragment : FragmentBase() {
     }
 
 
-    private fun setupFilters() {
+    /*  private fun setupFilters() {
 
-        val statusNames = listOf("All") + Status.entries.map { it.name }
-        mBinding.spinnerStatus.adapter = ArrayAdapter(
-            requireActivity(), android.R.layout.simple_spinner_item, statusNames
-        ).apply {
-            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+          val statusNames = listOf("All") + Status.entries.map { it.name }
+          mBinding.spinnerStatus.adapter = ArrayAdapter(
+              requireActivity(), android.R.layout.simple_spinner_item, statusNames
+          ).apply {
+              setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+          }
+          mBinding.spinnerStatus.onItemSelectedListener =
+              object : AdapterView.OnItemSelectedListener {
+                  override fun onItemSelected(
+                      parent: AdapterView<*>, view: View?, position: Int, id: Long
+                  ) {
+                      val selectedStatus =
+                          if (position == 0) null else Status.entries[position - 1].name
+
+
+                      if (currentUser == null) {
+                          // redirect to login
+                          return
+                      }
+                      val uid = currentUser.uid
+                      mViewModel.applyFilters(uid, selectedStatus)
+
+
+                  }
+
+                  override fun onNothingSelected(p0: AdapterView<*>?) {
+                      TODO("Not yet implemented")
+                  }
+              }
+      }
+  */
+
+
+    private fun showSearchDialog(dialogFlagData: Int) {
+        dialogFlag = dialogFlagData
+        if (alertDialogSearch == null) {
+            alertDialogSearch =
+                AlertDialogSearch(requireActivity(), generalListener, generalFilterItemListener)
         }
-        mBinding.spinnerStatus.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>, view: View?, position: Int, id: Long
-                ) {
-                    val selectedStatus =
-                        if (position == 0) null else Status.entries[position - 1].name
-
-
-                    if (currentUser == null) {
-                        // redirect to login
-                        return
-                    }
-                    val uid = currentUser.uid
-                    mViewModel.applyFilters(uid, selectedStatus)
-
-
-                }
-
-                override fun onNothingSelected(p0: AdapterView<*>?) {
-                    TODO("Not yet implemented")
-                }
-            }
+        setUpDialogData()
+        setUpDialogTitleData()
     }
+
+    private fun setUpDialogData() {
+        /*mViewModel.observableSearchDataList.clear();
+        for (int i = 0; i < 5; i++) {
+            mViewModel.observableSearchDataList.add(new PojoDialogSearch("item " + (i + 1), "id" + (i + 1)));
+        }*/
+    }
+
+    private fun setUpDialogTitleData() {
+        var selectedTitle: Int = R.string.text_search
+        var selectedId: String? = ""
+        if (dialogFlag == 1) {
+            if (TextUtils.isEmpty(mViewModel.observableTaskStatus.get()) || mViewModel.observableTaskStatus.equals(
+                    "0"
+                )
+            ) {
+                selectedId = "0"
+            } else {
+                selectedId = mViewModel.selectedStatus.name
+            }
+            selectedTitle = R.string.select_status
+        }
+        alertDialogSearch?.setTitle(selectedTitle)
+        alertDialogSearch?.showDialog(selectedId, mViewModel.observableSearchDataList)
+    }
+
+    private fun setUpTextSelection() {
+        if (pojoSearchSelect != null && !TextUtils.isEmpty(pojoSearchSelect.title)) {
+            if (dialogFlag == 1) {
+                if (pojoSearchSelect.id != "0") {
+                    mViewModel.selectedStatus = Status.valueOf(pojoSearchSelect.id)
+                }
+                mViewModel.observableTaskStatus.set(pojoSearchSelect.title)
+            }
+        }
+        changeFilterAlert()
+    }
+
+    private val generalFilterItemListener: GeneralItemListener =
+        GeneralItemListener { _, position, item ->
+            if (item is PojoDialogSearch) {
+                alertDialogSearch?.onItemClick(position)
+                pojoSearchSelect = item
+            }
+        }
+
 
     private val generalListener: GeneralListener = GeneralListener { view ->
         when (view?.id) {
@@ -149,6 +213,21 @@ class UserHomeFragment : FragmentBase() {
                     mViewModel.logout()
                 }
             }
+
+            R.id.actvStatus -> {
+                mViewModel.addAlertSearchItem(myApplication?.applicationContext)
+                showSearchDialog(1)
+            }
+
+            R.id.btnAlertCancel -> {
+                alertDialogSearch?.dismissDialog()
+            }
+
+            R.id.btnAlertSave -> {
+                setUpTextSelection()
+                alertDialogSearch?.dismissDialog()
+            }
+
         }
     }
     private val generalItemListener = GeneralItemListener { view, _, item ->
@@ -172,6 +251,20 @@ class UserHomeFragment : FragmentBase() {
 
             }
         }
+    }
+
+
+    fun changeFilterAlert() {
+        Log.d("Tag","observableTaskAssignToUid")
+        val userId = currentUser?.uid
+//        val sPos = mViewModel.observableTaskStatus
+        val sPos = mViewModel.observableTaskStatus.get()
+        val status =
+            if (sPos.equals("") || sPos.equals(myApplication?.applicationContext?.getString(R.string.text_all))) null else mViewModel.selectedStatus.name
+
+        Log.d("Tag","changeFilterAlert sPos : $sPos ")
+        Log.d("Tag","changeFilterAlert userId : $userId status : $status ")
+        mViewModel.applyFilters(userId, status)
     }
 
 }

@@ -2,6 +2,7 @@ package com.example.taskmanagement.view.adapter
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -13,7 +14,7 @@ import com.example.taskmanagement.databinding.TaskItemBinding
 
 class TaskAdapter(
     var users: List<UserModel>,
-    private val generalItemListener: GeneralItemListener
+    private val generalItemListener: GeneralItemListener,
 ) : RecyclerView.Adapter<TaskAdapter.ViewHolder>() {
     var isAdmin = false
     var tasks: List<TaskModel> = emptyList()
@@ -57,7 +58,6 @@ class TaskAdapter(
             binding.currentPosition = position
             binding.isLastItem = isLastItem
             binding.handler = generalItemListener
-
             binding.executePendingBindings()
         }
     }

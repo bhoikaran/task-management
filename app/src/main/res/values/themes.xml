@@ -157,7 +157,10 @@
     </style>
 
 
-    <style name="TextAppearance.App.Quicksand.Bold.14" parent="QuicksandBold">
+    <style name="TextAppearance.App.Quicksand.Bold.16" parent="QuicksandBold">
+        <item name="android:textSize">@dimen/textsize_16sp</item>
+    </style>
+ <style name="TextAppearance.App.Quicksand.Bold.14" parent="QuicksandBold">
         <item name="android:textSize">@dimen/textsize_14sp</item>
     </style>
 
