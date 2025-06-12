@@ -18,6 +18,7 @@ import com.example.taskmanagement.businesslogic.model.PojoDialogSearch
 import com.example.taskmanagement.businesslogic.model.Status
 import com.example.taskmanagement.businesslogic.model.TaskModel
 import com.example.taskmanagement.businesslogic.model.UserModel
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -31,17 +32,19 @@ class AdminViewModel(mApplication: MyApplication) : ViewModelBase(mApplication) 
         ObservableArrayList<PojoDialogSearch>()
 
     // Expose Firestore users as LiveData
-    val allUsers: LiveData<List<UserModel>> = repo.getUsersFlow(mApplication)
+    val allUsers: LiveData<List<UserModel>> = repo.getUsersFlow(mApplication, mSharePreference?.getString(R.string.prefAdminId))
         .asLiveData(Dispatchers.IO)
-    var callLogout: MutableLiveData<Void?> = MutableLiveData<Void?>()
+
     private val _userFilter = MutableLiveData<String?>(null)
     private val _statusFilter = MutableLiveData<String?>(null)
     var observerNoRecords: ObservableInt = ObservableInt(0)
+
     val filteredTasks: LiveData<List<TaskModel>> =
         MediatorLiveData<List<TaskModel>>().apply {
             fun reload() {
                 viewModelScope.launch(Dispatchers.IO) {
-                    repo.getTasksFlow(mApplication,_userFilter.value, _statusFilter.value)
+                    repo.getTasksFlow(mApplication,
+                        currentUser?.uid,_userFilter.value, _statusFilter.value)
                         .collect { postValue(it) }
                 }
             }
@@ -58,15 +61,6 @@ class AdminViewModel(mApplication: MyApplication) : ViewModelBase(mApplication) 
     fun deleteTask(task: TaskModel) = viewModelScope.launch(Dispatchers.IO) {
         task.id?.let { repo.deleteTask(it) }
     }
-
-
-    fun logout(){
-        repo.clearAllListeners()
-        authRepo.signOut()
-        mSharePreference?.clear()
-        callLogout.value = null
-    }
-
 
 
     fun addAlertSearchItem(context : Context?, flag: Int) {

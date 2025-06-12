@@ -25,21 +25,21 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        android:padding="16dp"
+        app:showSnackBarInt="@{viewModel.observerSnackBarInt}"
+        app:showSnackBarString="@{viewModel.observerSnackBarString}">
 
-        <!-- App Bar -->
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topAppBar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:backgroundTint="?attr/colorSurface"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:menu="@menu/home_menu">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <!-- <TextView
                      android:id="@+id/title"
@@ -72,7 +72,6 @@
                     android:id="@+id/fabAddTask"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:background="@drawable/bg_ripple_mask"
                     android:onClick="@{generalListener::onClick}"
                     android:orientation="horizontal"
@@ -107,22 +106,9 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-                <ImageButton
-                    android:id="@+id/btnLogout"
-                    style="@style/Widget.Material3.Button.IconButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:contentDescription="@string/logout"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:onClick="@{generalListener::onClick}"
-                    android:src="@drawable/ic_logout"
-                    app:iconTint="@color/error"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.appbar.MaterialToolbar>
+
 
         <!-- Filter Section -->
         <androidx.cardview.widget.CardView

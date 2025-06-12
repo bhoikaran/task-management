@@ -3,12 +3,11 @@ package com.example.taskmanagement.view.fragments
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.taskmanagement.MyApplication
@@ -18,14 +17,12 @@ import com.example.taskmanagement.businesslogic.interactors.GeneralListener
 import com.example.taskmanagement.businesslogic.model.PojoDialogSearch
 import com.example.taskmanagement.businesslogic.model.Status
 import com.example.taskmanagement.businesslogic.model.TaskModel
-import com.example.taskmanagement.businesslogic.viewmodel.AdminViewModel
 import com.example.taskmanagement.businesslogic.viewmodel.UserViewModel
-import com.example.taskmanagement.databinding.FragmentAdminHomeBinding
 import com.example.taskmanagement.databinding.FragmentUserHomeBinding
 import com.example.taskmanagement.view.adapter.TaskAdapter
 import com.example.taskmanagement.view.dialogsearchselect.AlertDialogSearch
 import com.google.firebase.auth.FirebaseAuth
-import kotlin.collections.get
+
 
 class UserHomeFragment : FragmentBase() {
     private lateinit var mBinding: FragmentUserHomeBinding
@@ -58,7 +55,8 @@ class UserHomeFragment : FragmentBase() {
         mBinding.viewModel = mViewModel
         mBinding.generalListener = generalListener
         mBinding.lifecycleOwner = viewLifecycleOwner
-
+        (requireActivity() as AppCompatActivity)
+            .setSupportActionBar(mBinding.topAppBar)
         return mBinding.root
     }
 
@@ -106,6 +104,20 @@ class UserHomeFragment : FragmentBase() {
         }
     }
 
+
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_logout -> {
+                showConfirmationDialog((getString(R.string.text_logout))) { dialog, which ->
+                    mViewModel.logout()
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 
     private fun setupRecyclerView() {
         adapterTask = TaskAdapter(emptyList(), generalItemListener)
@@ -208,11 +220,11 @@ class UserHomeFragment : FragmentBase() {
 
     private val generalListener: GeneralListener = GeneralListener { view ->
         when (view?.id) {
-            R.id.btnLogout -> {
+           /* R.id.btnLogout -> {
                 showConfirmationDialog((getString(R.string.text_logout))) { dialog, which ->
                     mViewModel.logout()
                 }
-            }
+            }*/
 
             R.id.actvStatus -> {
                 mViewModel.addAlertSearchItem(myApplication?.applicationContext)

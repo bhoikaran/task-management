@@ -30,13 +30,13 @@ class UserViewModel(mApplication: MyApplication) : ViewModelBase(mApplication) {
 
     private val _userFilter = MutableLiveData<String?>(null)
     private val _statusFilter = MutableLiveData<String?>(null)
-    var callLogout: MutableLiveData<Void?> = MutableLiveData<Void?>()
+
     var observerNoRecords: ObservableInt = ObservableInt(0)
     val filteredTasks: LiveData<List<TaskModel>> =
         MediatorLiveData<List<TaskModel>>().apply {
             fun reload() {
                 viewModelScope.launch(Dispatchers.IO) {
-                    repo.getTasksFlow(mApplication,_userFilter.value, _statusFilter.value)
+                    repo.getTasksFlow(mApplication,mSharePreference?.getString(R.string.prefAdminId),_userFilter.value, _statusFilter.value)
                         .collect { postValue(it)
                             observerNoRecords.set(if (it.isEmpty()) 2 else 1)
                         }
@@ -54,12 +54,7 @@ class UserViewModel(mApplication: MyApplication) : ViewModelBase(mApplication) {
     fun deleteTask(task: TaskModel) = viewModelScope.launch(Dispatchers.IO) {
         task.id?.let { repo.deleteTask(it) }
     }
-    fun logout(){
-        repo.clearAllListeners()
-        authRepo.signOut()
-        mSharePreference?.clear()
-        callLogout.value = null
-    }
+
 
     fun addAlertSearchItem(context : Context?) {
 

@@ -20,19 +20,20 @@ import kotlinx.coroutines.tasks.await
 class FirestoreTaskRepository {
     private val db = FirebaseFirestore.getInstance()
     internal val tasksCol = db.collection("tasks")
-    private val usersCol = db.collection("users")
+    internal val usersCol = db.collection("users")
     private val titleCol = db.collection("titles")
 
     // Track listeners
     private val activeListeners = mutableListOf<ListenerRegistration>()
 
-    fun getUsersFlow(context : Context): Flow<List<UserModel>> = callbackFlow {
+    /*fun getUsersFlow(context : Context): Flow<List<UserModel>> = callbackFlow {
+
+
         val sub = usersCol.addSnapshotListener { snap, ex ->
-            Log.d("getUsersFlow", "addSnapshotListener: ${snap?.documents}")
+
             if (ex != null) {
                 // 👇 Handle permission/firestore denied error
                 Toast.makeText(context, "Something Went Wrong...", Toast.LENGTH_SHORT).show()
-                Log.e("getUsersFlow", "Firestore error", ex)
                 // Optional: send empty list or keep last state
                 trySend(emptyList())
                 return@addSnapshotListener
@@ -47,12 +48,38 @@ class FirestoreTaskRepository {
             sub.remove()
             activeListeners.remove(sub)
         }
+    }*/
+
+    fun getUsersFlow(context: Context, createdBy: String?): Flow<List<UserModel>> = callbackFlow {
+        val query = usersCol.whereEqualTo("createdBy", createdBy)
+
+        val sub = query.addSnapshotListener { snap, ex ->
+            if (ex != null) {
+                Toast.makeText(context, "Something went wrong...", Toast.LENGTH_SHORT).show()
+                trySend(emptyList())
+                return@addSnapshotListener
+            }
+
+            val list = snap!!.documents.mapNotNull {
+                it.toObject(UserModel::class.java)?.copy(uid = it.id)
+            }.filter { it.role != "admin" } // Keep this if you want to exclude admins
+
+            trySend(list)
+        }
+
+        activeListeners.add(sub)
+        awaitClose {
+            sub.remove()
+            activeListeners.remove(sub)
+        }
     }
 
-    fun getTasksFlow(context: Context, userId: String?, status: String?): Flow<List<TaskModel>> = callbackFlow {
+    fun getTasksFlow(context: Context, createdBy: String?,userId: String?, status: String?): Flow<List<TaskModel>> = callbackFlow {
         var query: Query = tasksCol
         userId?.let { query = query.whereEqualTo("assignPersonId", it) }
         status?.let { query = query.whereEqualTo("status", it) }
+        createdBy?.let { query = query.whereEqualTo("createdBy", it) }
+
         query = query.orderBy("assignDate", Query.Direction.DESCENDING)
 
         val listener = query.addSnapshotListener { snap, ex ->

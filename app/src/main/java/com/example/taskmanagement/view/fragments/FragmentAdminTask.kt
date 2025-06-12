@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.example.taskmanagement.MyApplication
 import com.example.taskmanagement.R
+import com.example.taskmanagement.businesslogic.interactors.BackPressHandler
 import com.example.taskmanagement.businesslogic.interactors.GeneralItemListener
 import com.example.taskmanagement.businesslogic.interactors.GeneralListener
 import com.example.taskmanagement.businesslogic.model.PojoDialogSearch
@@ -26,7 +27,7 @@ import java.util.Date
 import java.util.Locale
 
 
-class FragmentAdminTask : FragmentBase() {
+class FragmentAdminTask : FragmentBase() , BackPressHandler {
     private lateinit var mBinding: FragmentAdminTaskBinding
     private lateinit var mViewModel: AdminTaskViewModel
     private var taskId: String? = null
@@ -388,4 +389,21 @@ class FragmentAdminTask : FragmentBase() {
 
         }
     }
+
+  /*  open override fun onBackPressed(): Boolean {
+        showConfirmationDialog((getString(R.string.text_cancel_task))) { dialog, which ->
+            getParentFragmentManager().popBackStack();
+        }
+        return super.onBackPressed()
+    }*/
+
+
+    public override fun onBackPressed(): Boolean {
+        Log.d("onBackPressed","onBackPressed FragmentAdminTask BackPressHandler")
+        showConfirmationDialog((getString(R.string.text_cancel_task)), { dialog, which ->
+            getParentFragmentManager().popBackStack()
+        })
+        return true
+    }
+
 }

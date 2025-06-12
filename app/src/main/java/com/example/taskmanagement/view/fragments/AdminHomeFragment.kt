@@ -4,21 +4,20 @@ import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.ContextWrapper
 import android.content.Intent
-import android.content.res.Resources
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.load.engine.Resource
 import com.example.taskmanagement.MyApplication
 import com.example.taskmanagement.R
 import com.example.taskmanagement.businesslogic.interactors.GeneralItemListener
@@ -81,7 +80,28 @@ class AdminHomeFragment : FragmentBase() {
 
         return mBinding.root
     }
+/*    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.home_menu, menu)
+        return true
+    }
 
+    */
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+
+
+            R.id.action_logout -> {
+                showConfirmationDialog((getString(R.string.text_logout))) { dialog, which ->
+                    mViewModel.logout()
+                }
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -106,17 +126,17 @@ class AdminHomeFragment : FragmentBase() {
     private fun initComponents() {
         setupRecyclerView()
 //        setupFilters()
-        setupMenuClicks()
+
     }
 
     private fun observeEvents() {
 
         mViewModel.callLogout.observe(
-            getViewLifecycleOwner(),
-            { it ->
-                mViewModel.mSharePreference?.clear()
-                mActivityMain?.navigateToLogin()
-            })
+            getViewLifecycleOwner()
+        ) { it ->
+            mViewModel.mSharePreference?.clear()
+            mActivityMain?.navigateToLogin()
+        }
 
 
 
@@ -133,26 +153,31 @@ class AdminHomeFragment : FragmentBase() {
         }
     }
 
-    private fun setupMenuClicks() {
-        mBinding.topAppBar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.action_filter -> {
-                    // toggle your filter card
-                    mBinding.filterSection.isVisible = !mBinding.filterSection.isVisible
+    /*    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+            menuInflater.inflate(R.menu.home_menu, menu)
+            return true
+        }
+
+        override fun onOptionsItemSelected(item: MenuItem): Boolean {
+            return when (item.itemId) {
+                R.id.action_add_task -> {
+                    mActivityMain?.addFragment(
+                        FragmentAdminTask(),
+                        FragmentAdminTask().javaClass.simpleName
+                    )
                     true
                 }
-
                 R.id.action_logout -> {
                     showConfirmationDialog((getString(R.string.text_logout))) { dialog, which ->
                         mViewModel.logout()
                     }
                     true
                 }
-
-                else -> false
+                else -> super.onOptionsItemSelected(item)
             }
-        }
-    }
+        }*/
+
+
 
     private fun setupRecyclerView() {
         adapterTask = TaskAdapter(emptyList(), generalItemListener)
@@ -286,11 +311,11 @@ class AdminHomeFragment : FragmentBase() {
                  )
              }
  */
-            R.id.btnLogout -> {
+           /* R.id.btnLogout -> {
                 showConfirmationDialog((getString(R.string.text_logout))) { dialog, which ->
                     mViewModel.logout()
                 }
-            }
+            }*/
         }
     }
     private val generalItemListener = GeneralItemListener { view, _, item ->
@@ -318,7 +343,9 @@ class AdminHomeFragment : FragmentBase() {
                 }
 
                 R.id.imageview_share -> {
-                    val user = mViewModel.allUsers.value?.find { it.uid == item.assignPersonId }?.name ?: "Unknown"
+                    val user =
+                        mViewModel.allUsers.value?.find { it.uid == item.assignPersonId }?.name
+                            ?: "Unknown"
                     context?.let { ctx ->
                         if (ctx is Activity || ctx is ContextWrapper && ctx.baseContext is Activity) {
                             Utils().shareTaskDetails(ctx, item, user)

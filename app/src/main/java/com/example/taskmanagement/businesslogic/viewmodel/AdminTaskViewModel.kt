@@ -13,12 +13,14 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.example.taskmanagement.MyApplication
+import com.example.taskmanagement.R
 import com.example.taskmanagement.businesslogic.interactors.ObservableString
 import com.example.taskmanagement.businesslogic.model.PojoDialogSearch
 import com.example.taskmanagement.businesslogic.model.Status
 import com.example.taskmanagement.businesslogic.model.TaskModel
 import com.example.taskmanagement.businesslogic.model.TitleModel
 import com.example.taskmanagement.businesslogic.model.UserModel
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -26,7 +28,7 @@ import kotlinx.coroutines.tasks.await
 
 class AdminTaskViewModel(mApplication: MyApplication) : ViewModelBase(mApplication) {
     var taskModel: TaskModel = TaskModel()
-
+    var observableBottomSheetTitle: ObservableString = ObservableString("")
     var observableTitle = ObservableString("")
     var observableTaskDescription = ObservableString("")
     var observableTaskAssignTo = ObservableString("")
@@ -43,11 +45,11 @@ class AdminTaskViewModel(mApplication: MyApplication) : ViewModelBase(mApplicati
 
     // Expose non-admin users
     val allUsers: LiveData<List<UserModel>> = repo
-        .getUsersFlow(mApplication)
+        .getUsersFlow(mApplication, mSharePreference?.getString(R.string.prefAdminId))
         .asLiveData(Dispatchers.IO)
 
     // Status list
-    val allStatus: List<Status> = Status.values().toList()
+    val allStatus: List<Status> = Status.entries
 
     // Filtered tasks
     private val _filteredTasks = MutableLiveData<List<TaskModel>>()
@@ -90,7 +92,9 @@ class AdminTaskViewModel(mApplication: MyApplication) : ViewModelBase(mApplicati
     private fun loadTasks(context: Context) {
         observableProgressBar.set(true)
         viewModelScope.launch(Dispatchers.IO) {
-            repo.getTasksFlow(context, userFilter.value, statusFilter.value)
+
+
+            repo.getTasksFlow(context, currentUser?.uid, userFilter.value, statusFilter.value)
                 .collect { list ->
                     _filteredTasks.postValue(list)
                     observerNoRecords.set(if (list.isEmpty()) 2 else 1)

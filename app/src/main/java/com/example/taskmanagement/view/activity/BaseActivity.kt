@@ -3,6 +3,7 @@ package com.example.taskmanagement.view.activity
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -12,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -23,6 +25,7 @@ import com.example.taskmanagement.businesslogic.model.TaskModel
 import com.example.taskmanagement.businesslogic.model.UserModel
 import com.example.taskmanagement.utils.ExcelExporter
 import com.example.taskmanagement.utils.ExportToExcel
+import com.example.taskmanagement.utils.SessionManager
 import com.example.taskmanagement.utils.Utils
 import com.example.taskmanagement.view.fragments.AdminHomeFragment
 import com.google.firebase.auth.FirebaseAuth
@@ -53,6 +56,9 @@ open class BaseActivity : AppCompatActivity() {
         }
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
+        if (auth.currentUser != null) {
+            SessionManager.initSessionListener(this)
+        }
     }
 
 
@@ -280,6 +286,13 @@ open class BaseActivity : AppCompatActivity() {
         const val REQUEST_CODE_STORAGE_PERMISSION = 200
 
     }
-
+    fun showConfirmationDialog(message: String?, okListener: DialogInterface.OnClickListener?) {
+        val mAlertDialog = AlertDialog.Builder(this, R.style.DialogTheme)
+        mAlertDialog.setMessage(message)
+            .setPositiveButton(resources.getString(R.string.text_yes), okListener)
+            .setNegativeButton(resources.getString(R.string.text_no), null)
+            .create()
+            .show()
+    }
 
 }

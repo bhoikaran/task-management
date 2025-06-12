@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.text.Html
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -12,6 +13,7 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.databinding.ObservableArrayList
+import androidx.databinding.ObservableField
 import androidx.databinding.ObservableInt
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -53,6 +55,7 @@ object CustomBindingAdapter {
         }
     }
 
+/*
     @JvmStatic
     @BindingAdapter(value = ["showSnackBarInt", "showSnackBarString"], requireAll = false)
     fun showSnackBar(
@@ -68,11 +71,34 @@ object CustomBindingAdapter {
             message = viewLayout.resources.getString(snackMessageInt.get())
             snackMessageInt.set(0)
         }
-
+        Log.d("","showSnackBar : $message" )
         if (!TextUtils.isEmpty(message)) {
             Util().showSnackBar(viewLayout, message)
         }
     }
+*/
+
+    @BindingAdapter(value = ["showSnackBarInt", "showSnackBarString"], requireAll = false)
+    @JvmStatic
+    fun showSnackBar(
+        viewLayout: View,
+        snackMessageInt: ObservableField<Int>?,
+        snackMessageString: ObservableString?
+    ) {
+        var message = ""
+        if (snackMessageString != null && !TextUtils.isEmpty(snackMessageString.trimmed)) {
+            message = snackMessageString.trimmed
+            snackMessageString.set("")
+        } else if (snackMessageInt != null && snackMessageInt.get() != null && snackMessageInt.get() != 0) {
+            message = viewLayout.resources.getString(snackMessageInt.get()!!)
+            snackMessageInt.set(0)
+        }
+        Log.d("SnackBar", "showSnackBar : $message")
+        if (!TextUtils.isEmpty(message)) {
+            Util().showSnackBar(viewLayout, message)
+        }
+    }
+
 
     @JvmStatic
     @BindingAdapter(value = ["CircleImagePath", "CirclePlaceHolder"])

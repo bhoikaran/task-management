@@ -29,8 +29,68 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        android:padding="16dp"
+        app:showSnackBarInt="@{viewModel.observerSnackBarInt}"
+        app:showSnackBarString="@{viewModel.observerSnackBarString}">
 
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:menu="@menu/home_menu"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/filterSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/tv_select_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_ten"
+                    android:text="@string/select_status"
+                    android:textAppearance="@style/TextAppearance.App.Quicksand.SemiBold.14"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/actvStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_ten"
+                    android:layout_marginTop="@dimen/margin_three"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:clickable="true"
+                    android:drawableEnd="@drawable/arrow_bottom"
+                    android:focusable="false"
+                    android:hint="@string/text_all"
+                    android:inputType="none"
+                    android:onClick="@{generalListener::onClick}"
+                    android:padding="@dimen/margin_eight"
+                    android:text="@={viewModel.observableTaskStatus}"
+                    android:textAppearance="@style/TextAppearance.App.Quicksand.Regular.14"
+                    android:textColorHint="@color/color_grey"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_select_status" />
+                <!-- <Spinner
+                    android:id="@+id/spinnerStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dropdown"
+
+                    app:layout_constraintTop_toBottomOf="@+id/tv_select_status"
+                    app:layout_constraintStart_toStartOf="parent"/>-->
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.appbar.MaterialToolbar>
 
         <!-- <LinearLayout
              android:id="@+id/filterSection"
@@ -60,57 +120,7 @@
 
          </LinearLayout>-->
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/filterSection"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:orientation="vertical"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/tv_select_status"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/select_status"
-                android:layout_marginStart="@dimen/margin_ten"
-                android:textAppearance="@style/TextAppearance.App.Quicksand.SemiBold.14"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/actvStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/margin_ten"
-                android:layout_marginTop="@dimen/margin_six"
-                android:layout_weight="1"
-                android:background="@null"
-                android:clickable="true"
-                android:drawableEnd="@drawable/arrow_bottom"
-                android:focusable="false"
-                android:hint="@string/text_all"
-                android:inputType="none"
-                android:onClick="@{generalListener::onClick}"
-                android:padding="@dimen/margin_eight"
-                android:text="@={viewModel.observableTaskStatus}"
-                android:textAppearance="@style/TextAppearance.App.Quicksand.Regular.14"
-                android:textColorHint="@color/color_grey"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_select_status" />
-            <!-- <Spinner
-                android:id="@+id/spinnerStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:spinnerMode="dropdown"
-
-                app:layout_constraintTop_toBottomOf="@+id/tv_select_status"
-                app:layout_constraintStart_toStartOf="parent"/>-->
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+<!--
         <ImageButton
             android:id="@+id/btnLogout"
             style="@style/Widget.Material3.Button.IconButton"
@@ -122,7 +132,7 @@
             android:src="@drawable/ic_logout"
             app:iconTint="@color/error"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />-->
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -130,7 +140,7 @@
             android:layout_height="0dp"
             android:layout_marginTop="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/filterSection"
+            app:layout_constraintTop_toBottomOf="@id/topAppBar"
             tools:listitem="@layout/task_item" />
 
 

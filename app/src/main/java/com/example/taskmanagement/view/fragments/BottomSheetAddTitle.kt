@@ -120,7 +120,8 @@ class BottomSheetAddTitle : BottomSheetBase() {
 
                 R.id.btn_add_title -> {
                     Log.d("btn_add_title","btn_add_title :   vbdsdf")
-                    val title = mBinding.etTitleName.text.toString().trim()
+//                    val title = mBinding.etTitleName.text.toString().trim()
+                    val title = viewModel.observableBottomSheetTitle.get()
                     if (title.isEmpty()) {
                         Toast.makeText(mActivity, "Title is required", Toast.LENGTH_SHORT)
                             .show()

@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.util.Patterns
 import androidx.appcompat.app.AlertDialog
 import com.example.taskmanagement.R
 import com.example.taskmanagement.businesslogic.model.TaskModel
@@ -37,7 +38,9 @@ class Utils {
               .setNegativeButton("No", null)
               .show()
       }*/
-
+    fun isValidEmail(email: String): Boolean {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
 
     fun openDatePicker(
         context: Context,

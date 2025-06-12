@@ -103,7 +103,6 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/margin_fifty"
-
                     android:backgroundTint="@android:color/white"
                     app:cardCornerRadius="@dimen/margin_eight"
                     app:cardElevation="2dp">
@@ -280,26 +279,35 @@
                         <androidx.cardview.widget.CardView
                             android:id="@+id/cv_select_date"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/margin_forty"
+                            android:layout_height="@dimen/margin_fifty"
                             android:backgroundTint="@android:color/white"
                             android:onClick="@{generalListener::onClick}"
                             android:padding="@dimen/margin_ten"
                             app:cardCornerRadius="@dimen/margin_eight"
                             app:cardElevation="2dp">
 
-                            <com.google.android.material.textview.MaterialTextView
+                            <androidx.constraintlayout.widget.ConstraintLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_marginStart="@dimen/margin_ten"
-                                android:background="@null"
-                                android:hint="@string/task_date_formate"
-                                android:padding="@dimen/margin_eight"
-                                android:singleLine="true"
-                                android:text="@={viewModel.observableAssignDate}"
-                                android:textAppearance="@style/TextAppearance.App.Quicksand.Regular.12"
-                                android:textColorHint="@color/color_grey"
-                                android:textStyle="bold"
-                                app:drawableEndCompat="@drawable/task_date" />
+                                android:layout_height="match_parent">
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="@dimen/margin_ten"
+                                    android:background="@null"
+                                    android:hint="@string/task_date_formate"
+                                    android:padding="@dimen/margin_eight"
+                                    android:singleLine="true"
+                                    android:text="@={viewModel.observableAssignDate}"
+                                    android:textAppearance="@style/TextAppearance.App.Quicksand.Regular.14"
+                                    android:textColorHint="@color/color_grey"
+                                    android:textStyle="bold"
+                                    android:textAlignment="textStart"
+                                    app:drawableEndCompat="@drawable/task_date"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent"/>
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
                         </androidx.cardview.widget.CardView>
 
 
@@ -312,6 +320,7 @@
                         android:layout_weight="1"
                         android:orientation="vertical"
                         android:paddingStart="@dimen/margin_twelve"
+
                         android:visibility="@{viewModel.editMode ? View.VISIBLE : View.GONE}">
 
                         <TextView
@@ -330,26 +339,36 @@
                         <androidx.cardview.widget.CardView
                             android:id="@+id/cv_select_complete_date"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/margin_forty"
+                            android:layout_height="@dimen/margin_fifty"
                             android:backgroundTint="@android:color/white"
                             android:onClick="@{generalListener::onClick}"
                             android:padding="@dimen/margin_ten"
                             app:cardCornerRadius="@dimen/margin_eight"
                             app:cardElevation="2dp">
 
-                            <com.google.android.material.textview.MaterialTextView
+                            <androidx.constraintlayout.widget.ConstraintLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_marginStart="@dimen/margin_ten"
-                                android:background="@null"
-                                android:hint="@string/task_date_formate"
-                                android:padding="@dimen/margin_eight"
-                                android:singleLine="true"
-                                android:text="@={viewModel.observableCompleteDate}"
-                                android:textAppearance="@style/TextAppearance.App.Quicksand.Regular.12"
-                                android:textColorHint="@color/color_grey"
-                                android:textStyle="bold"
-                                app:drawableEndCompat="@drawable/task_date" />
+                                android:layout_height="match_parent">
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="@dimen/margin_ten"
+                                    android:background="@null"
+                                    android:hint="@string/task_date_formate"
+                                    android:padding="@dimen/margin_eight"
+                                    android:singleLine="true"
+                                    android:text="@={viewModel.observableCompleteDate}"
+                                    android:textAppearance="@style/TextAppearance.App.Quicksand.Regular.14"
+                                    android:textColorHint="@color/color_grey"
+                                    android:textStyle="bold"
+                                    android:textAlignment="textStart"
+                                    app:drawableEndCompat="@drawable/task_date"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent"/>
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
                         </androidx.cardview.widget.CardView>
 
 
@@ -442,8 +461,8 @@
                         android:focusable="false"
                         android:hint="@string/select_status"
                         android:inputType="none"
-                        android:padding="@dimen/margin_eight"
                         android:onClick="@{generalListener::onClick}"
+                        android:padding="@dimen/margin_eight"
                         android:text="@={viewModel.observableTaskStatus}"
                         android:textAppearance="@style/TextAppearance.App.Quicksand.Regular.12"
                         android:textColorHint="@color/color_grey"
