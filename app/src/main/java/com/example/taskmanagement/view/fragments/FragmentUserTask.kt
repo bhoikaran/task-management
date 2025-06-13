@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.example.taskmanagement.MyApplication
 import com.example.taskmanagement.R
+import com.example.taskmanagement.businesslogic.interactors.BackPressHandler
 import com.example.taskmanagement.businesslogic.interactors.GeneralListener
 import com.example.taskmanagement.businesslogic.model.Status
 import com.example.taskmanagement.businesslogic.model.TaskModel
@@ -24,7 +25,7 @@ import java.util.Date
 import java.util.Locale
 
 
-class FragmentUserTask : FragmentBase() {
+class FragmentUserTask : FragmentBase(), BackPressHandler {
     private lateinit var mBinding: FragmentUserTaskBinding
     private lateinit var mViewModel: UserTaskViewModel
     private var taskId: String? = null
@@ -40,17 +41,11 @@ class FragmentUserTask : FragmentBase() {
     }
 
 
-
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         mBinding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_user_task,
-            container,
-            false
+            inflater, R.layout.fragment_user_task, container, false
         )
         mViewModel = UserTaskViewModel(requireActivity().applicationContext as MyApplication)
         mBinding.viewModel = mViewModel
@@ -87,7 +82,6 @@ class FragmentUserTask : FragmentBase() {
                 task?.let { populateForEdit(it) }
             }
         }
-        setupDatePickers()
 
     }
 
@@ -95,49 +89,47 @@ class FragmentUserTask : FragmentBase() {
 
     }
 
-    private fun setupDatePickers() {
-        mBinding.tvAssignDate.setOnClickListener {
-            Utils().openDatePicker(requireActivity()) { millis, text ->
-                selectedAssignDate = millis
-                mBinding.tvAssignDate.setText(text)
-            }
-        }
-        mBinding.tvPickCompleteDate.setOnClickListener {
-            Utils().openDatePicker(requireActivity(), minDate = selectedAssignDate) { millis, text ->
-                selectedCompleteDate = millis
-                mBinding.tvPickCompleteDate.setText(text)
-            }
-        }
-    }
+
+    /*  private fun populateForEdit(task: TaskModel) {
+
+          mBinding.etTitle.setText(task.title)
+          mBinding.etDescription.setText(task.taskDetail)
+
+          selectedAssignDate = task.assignDate
+  //        binding.tvAssignDate.text = formatDate(task.assignDate)
+          mBinding.tvAssignDate.setText(formatDate(task.assignDate))
+          // Assign user in spinner
+
+          selectedUserId = task.assignPersonId
+
+          // Remark
+          mBinding.etRemark.setText(task.userRemark)
+
+          // Completion Date
+          selectedCompleteDate = task.completionDate ?: 0L
+          if (selectedCompleteDate != 0L) {
+              mBinding.tvPickCompleteDate.setText(formatDate(selectedCompleteDate!!))
+          }
+
+          val pos = task.status.ordinal
+
+          selectedStatus = task.status
+
+      }*/
+
 
     private fun populateForEdit(task: TaskModel) {
-
-        mBinding.etTitle.setText(task.title)
-        mBinding.etDescription.setText(task.taskDetail)
-
+        mViewModel.observableTitle.set(task.title)
+        mViewModel.observableTaskDescription.set(task.taskDetail)
         selectedAssignDate = task.assignDate
-//        binding.tvAssignDate.text = formatDate(task.assignDate)
-        mBinding.tvAssignDate.setText(formatDate(task.assignDate))
-        // Assign user in spinner
+        mViewModel.observableAssignDate.set(formatDate(task.assignDate))
 
-        selectedUserId = task.assignPersonId
-
-        // Remark
-        mBinding.etRemark.setText(task.userRemark)
-
-        // Completion Date
-        selectedCompleteDate = task.completionDate ?: 0L
-        if (selectedCompleteDate != 0L) {
-            mBinding.tvPickCompleteDate.setText(formatDate(selectedCompleteDate!!))
+        selectedCompleteDate = task.completionDate
+        if (selectedCompleteDate != null) {
+            mViewModel.observableCompleteDate.set(formatDate(selectedCompleteDate!!))
         }
-
-        val pos = task.status.ordinal
-
-        selectedStatus = task.status
-
+        mViewModel.observableTaskUserRemark.set(task.userRemark)
     }
-
-
 
 
     private fun formatDate(ms: Long): String =
@@ -152,19 +144,26 @@ class FragmentUserTask : FragmentBase() {
 
             }
 
-            R.id.btnSave -> {
-                val remark = mBinding.etRemark.text.toString().trim().takeIf { it.isNotEmpty() }
+            R.id.backArrow -> {
+                showConfirmationDialog((getString(R.string.text_cancel_task))) { dialog, which ->
+                    getParentFragmentManager().popBackStack();
+                }
+            }
 
-                if (remark?.isEmpty() == true || selectedCompleteDate == null) {
-                    Toast.makeText(mActivity, "Remark and Complete Date are required", Toast.LENGTH_LONG)
-                        .show()
+            R.id.btnSave -> {
+
+                if (mViewModel.observableTaskUserRemark.isEmptyData == true || selectedCompleteDate == null) {
+                    Toast.makeText(
+                        mActivity, "Remark and Complete Date are required", Toast.LENGTH_LONG
+                    ).show()
                     return@GeneralListener
                 }
 
-                val model = TaskModel(/* id = if (isEdit) taskId else null,
-                    completionDate = selectedCompleteDate,
-                    userRemark = remark,
-                    status = Status.MARKED_DONE,*/
+                val model = TaskModel(
+                    /* id = if (isEdit) taskId else null,
+                                        completionDate = selectedCompleteDate,
+                                        userRemark = remark,
+                                        status = Status.MARKED_DONE,*/
 
                     id = if (isEdit) taskId else null,
                     title = taskModel.title,
@@ -173,14 +172,33 @@ class FragmentUserTask : FragmentBase() {
                     assignDate = taskModel.assignDate,
                     completionDate = selectedCompleteDate,
                     remark = taskModel.remark,
-                    userRemark = remark,
+                    userRemark = mViewModel.observableTaskUserRemark.trimmed,
                     status = Status.MARKED_DONE,
                     createdBy = taskModel.createdBy,
-                    )
+                )
                 mViewModel.updateTask(model)
                 getParentFragmentManager().popBackStack();
             }
 
+            R.id.cv_select_complete_date -> {
+
+                mActivity?.let {
+                    Utils().openDatePicker(
+                        it, minDate = selectedAssignDate
+                    ) { millis, text ->
+                        selectedCompleteDate = millis
+                        mViewModel.observableCompleteDate.set(text)
+                    }
+                }
+
+            }
         }
+    }
+
+    open override fun onBackPressed(): Boolean {
+        showConfirmationDialog((getString(R.string.text_cancel_task))) { dialog, which ->
+            getParentFragmentManager().popBackStack();
+        }
+        return true
     }
 }

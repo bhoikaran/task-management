@@ -25,12 +25,18 @@
 
     </data>
 
-
-    <FrameLayout
-        android:id="@+id/fragment_container"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="@drawable/task_background"
+        app:showSnackBarInt="@{viewModel.observerSnackBarInt}"
+        app:showSnackBarString="@{viewModel.observerSnackBarString}">
 
+        <FrameLayout
+            android:id="@+id/fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
 

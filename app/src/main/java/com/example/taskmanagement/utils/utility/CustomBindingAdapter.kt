@@ -2,7 +2,6 @@ package com.example.taskmanagement.utils.utility
 
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.text.Html
 import android.text.TextUtils
 import android.util.Log
@@ -14,6 +13,7 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.databinding.ObservableArrayList
+import androidx.databinding.ObservableField
 import androidx.databinding.ObservableInt
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,9 +21,11 @@ import com.bumptech.glide.Glide
 import com.example.taskmanagement.R
 import com.example.taskmanagement.businesslogic.interactors.GeneralItemListener
 import com.example.taskmanagement.businesslogic.interactors.ObservableString
+import com.example.taskmanagement.businesslogic.model.PojoDialogSearch
 import com.example.taskmanagement.businesslogic.model.Status
 import com.example.taskmanagement.utils.Util
-import com.google.android.material.textfield.TextInputLayout
+import com.example.taskmanagement.view.adapter.AdapterDialogSearch
+import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -53,6 +55,7 @@ object CustomBindingAdapter {
         }
     }
 
+/*
     @JvmStatic
     @BindingAdapter(value = ["showSnackBarInt", "showSnackBarString"], requireAll = false)
     fun showSnackBar(
@@ -68,11 +71,34 @@ object CustomBindingAdapter {
             message = viewLayout.resources.getString(snackMessageInt.get())
             snackMessageInt.set(0)
         }
-
+        Log.d("","showSnackBar : $message" )
         if (!TextUtils.isEmpty(message)) {
             Util().showSnackBar(viewLayout, message)
         }
     }
+*/
+
+    @BindingAdapter(value = ["showSnackBarInt", "showSnackBarString"], requireAll = false)
+    @JvmStatic
+    fun showSnackBar(
+        viewLayout: View,
+        snackMessageInt: ObservableField<Int>?,
+        snackMessageString: ObservableString?
+    ) {
+        var message = ""
+        if (snackMessageString != null && !TextUtils.isEmpty(snackMessageString.trimmed)) {
+            message = snackMessageString.trimmed
+            snackMessageString.set("")
+        } else if (snackMessageInt != null && snackMessageInt.get() != null && snackMessageInt.get() != 0) {
+            message = viewLayout.resources.getString(snackMessageInt.get()!!)
+            snackMessageInt.set(0)
+        }
+        Log.d("SnackBar", "showSnackBar : $message")
+        if (!TextUtils.isEmpty(message)) {
+            Util().showSnackBar(viewLayout, message)
+        }
+    }
+
 
     @JvmStatic
     @BindingAdapter(value = ["CircleImagePath", "CirclePlaceHolder"])
@@ -106,7 +132,30 @@ object CustomBindingAdapter {
             textView.text = ""
         }
     }
+    fun setLayoutManagerAdapter(
+        recyclerView: RecyclerView,
+        adapter: RecyclerView.Adapter<*>?,
+        orientation: Int
+    ) {
+        recyclerView.setAdapter(adapter)
+        val linearLayoutManager =
+            LinearLayoutManager(recyclerView.context, orientation, false)
+        recyclerView.setLayoutManager(linearLayoutManager)
+    }
 
+    @JvmStatic
+    @SuppressLint("NotifyDataSetChanged")
+    @BindingAdapter(value = ["adapterDialogSearch", "listenerDialogSearch"])
+    fun setAdapterDialogSearch(
+        recyclerView: RecyclerView,
+        listData: ObservableArrayList<PojoDialogSearch>,
+        listener: GeneralItemListener
+    ) {
+        val adapter  = AdapterDialogSearch(listData, listener)
+        setLayoutManagerAdapter(recyclerView, adapter, LinearLayoutManager.VERTICAL)
+    }
+
+/*
 
     @JvmStatic
     @BindingAdapter(value = ["formattedDate", "customTitle"])
@@ -125,12 +174,25 @@ object CustomBindingAdapter {
             textView.text = ""
         }
     }
+*/
 
     @JvmStatic
     @BindingAdapter("addHtmlReqTextHint")
     fun addHtmlReqTextHint(textView: TextView, text: String?) {
         val modifiedText = "${text ?: ""} ${textView.resources.getString(R.string.text_mandatory)}"
         textView.text = Html.fromHtml(modifiedText, Html.FROM_HTML_MODE_COMPACT)
+    }
+
+
+    @JvmStatic
+    @BindingAdapter("addCreatedDate")
+    fun addCreatedDate(textView: TextView, text: Timestamp?) {
+        var modifiedText = "-"
+        if (text != null) {
+            modifiedText=  " ${textView.resources.getString(R.string.text_created_at)} ${SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(text.toDate())}"
+        }
+
+        textView.text = modifiedText
     }
 
     @JvmStatic

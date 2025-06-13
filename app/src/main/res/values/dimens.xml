@@ -1,8 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="card_corner_radius">8dp</dimen>
-    <dimen name="card_elevation">4dp</dimen>
-    <dimen name="text_margin_small">4dp</dimen>
-    <dimen name="text_margin_medium">8dp</dimen>
-    <dimen name="remark_icon_padding">8dp</dimen>
+<!--<dimen name="card_corner_radius">8dp</dimen>
+<dimen name="card_elevation">4dp</dimen>-->
+<dimen name="text_margin_small">4dp</dimen>
+<dimen name="text_margin_medium">8dp</dimen>
+<dimen name="remark_icon_padding">8dp</dimen>
+
+
+
+
+<dimen name="margin_two_fifty">250dp</dimen>
+
+<dimen name="margin_two_thirty">230dp</dimen>
+<dimen name="margin_two_ten">210dp</dimen>
+
+<dimen name="layout_horizontal_margin">16dp</dimen>
+<dimen name="layout_vertical_margin">16dp</dimen>
+<dimen name="navigation_header_profilepic_size">84dp</dimen>
+<dimen name="navigation_header_height">150dp</dimen>
+<dimen name="bottom_appbar_size">64dp</dimen>
+
+<dimen name="textsize_8sp">8sp</dimen>
+<dimen name="textsize_10sp">10sp</dimen>
+<dimen name="textsize_12sp">12sp</dimen>
+<dimen name="textsize_14sp">14sp</dimen>
+<dimen name="textsize_16sp">16sp</dimen>
+<dimen name="font_twenty">20sp</dimen>
+<dimen name="font_twentytwo">22sp</dimen>
+<dimen name="font_eighteen">18sp</dimen>
+<dimen name="font_twenty_two">22sp</dimen>
+<dimen name="font_twenty_six">26sp</dimen>
+<dimen name="font_thirty">30sp</dimen>
+<dimen name="margin_twenty_six">26dp</dimen>
+<dimen name="margin_seventy">70dp</dimen>
+<dimen name="margin_seventy_two">72dp</dimen>
+<dimen name="margin_point_three">0.3dp</dimen>
+<dimen name="margin_point_five">0.5dp</dimen>
+<dimen name="margin_zero">0dp</dimen>
+<dimen name="margin_one">1dp</dimen>
+<dimen name="margin_two">2dp</dimen>
+<dimen name="margin_three">3dp</dimen>
+<dimen name="margin_four">4dp</dimen>
+<dimen name="margin_six">6dp</dimen>
+<dimen name="margin_eight">8dp</dimen>
+<dimen name="margin_ten">10dp</dimen>
+<dimen name="margin_twelve">12dp</dimen>
+<dimen name="margin_fourteen">14dp</dimen>
+<dimen name="margin_sixteen">16dp</dimen>
+<dimen name="margin_eighteen">18dp</dimen>
+<dimen name="margin_twenty">20dp</dimen>
+<dimen name="margin_twenty_two">22dp</dimen>
+<dimen name="margin_twentyfour">24dp</dimen>
+<dimen name="margin_twentysix">26dp</dimen>
+<dimen name="margin_twentyeight">28dp</dimen>
+<dimen name="margin_thirty">30dp</dimen>
+<dimen name="margin_thirtytwo">32dp</dimen>
+<dimen name="margin_thirtyFour">34dp</dimen>
+<dimen name="margin_thirty_six">36dp</dimen>
+<dimen name="margin_forty">40dp</dimen>
+<dimen name="margin_forty_four">44dp</dimen>
+<dimen name="margin_forty_five">45dp</dimen>
+<dimen name="margin_fourtysix">46dp</dimen>
+<dimen name="margin_forty_eight">48dp</dimen>
+<dimen name="margin_fifty">50dp</dimen>
+<dimen name="margin_fiftytwo">52dp</dimen>
+<dimen name="margin_fifty_four">54dp</dimen>
+<dimen name="margin_fiftysix">56dp</dimen>
+<dimen name="margin_sixty">60dp</dimen>
+<dimen name="margin_sixty_two">62dp</dimen>
+<dimen name="margin_sixtyfour">64dp</dimen>
+<dimen name="margin_sixtysix">66dp</dimen>
+<dimen name="margin_sixtyeight">68dp</dimen>
+<dimen name="margin_seventy_eight">78dp</dimen>
+<dimen name="margin_seventy_six">76dp</dimen>
+
+<dimen name="margin_eighty">80dp</dimen>
+<dimen name="margin_ninety">90dp</dimen>
+<dimen name="margin_one_hundred">100dp</dimen>
+<dimen name="margin_one_hundred_eight">108dp</dimen>
+<dimen name="margin_one_hundred_twenty">120dp</dimen>
+<dimen name="margin_one_fifty">150dp</dimen>
+<dimen name="margin_one_forty">140dp</dimen>
+<dimen name="margin_one_seventy">170dp</dimen>
+<dimen name="margin_top_gsdm">260dp</dimen>
+<dimen name="margin_tab_min_width">90dp</dimen>
+
+<dimen name="login_header_height">260dp</dimen>
+<dimen name="login_header_margin">220dp</dimen>
+<dimen name="detail_imageview_height">168dp</dimen>
+<dimen name="top_editor_width">220dp</dimen>
+<dimen name="top_editor_height">260dp</dimen>
+<dimen name="top_tredigrow_width">260dp</dimen>
+<dimen name="top_tredigrow_height">270dp</dimen>
+<dimen name="top_youmaylike_height">280dp</dimen>
+<dimen name="attach_imageview_height">220dp</dimen>
+<dimen name="size_three_hundred">300dp</dimen>
+<dimen name="button_size">36dp</dimen>
+
+<!--All sp(s)-->
+<dimen name="textsize_eight">8sp</dimen>
+<dimen name="textsize_nine">9sp</dimen>
+<dimen name="textsize_ten">10sp</dimen>
+<dimen name="textsize_twelve">12sp</dimen>
+<dimen name="textsize_forteen">14sp</dimen>
+<dimen name="textsize_sixteen">16sp</dimen>
+<dimen name="textsize_eighteen">18sp</dimen>
+<dimen name="textsize_twenty">20sp</dimen>
+<dimen name="textsize_twenty_two">22sp</dimen>
+<dimen name="textsize_twentyfour">24sp</dimen>
+<dimen name="textsize_twentyeight">28sp</dimen>
+<dimen name="textsize_thirty">30sp</dimen>
+<dimen name="textsize_thirtyTwo">32sp</dimen>
+<dimen name="textsize_thirtyfour">34sp</dimen>
+<dimen name="textsize_thirtySix">36sp</dimen>
+<dimen name="progressbar_center">50dp</dimen>
+
+<dimen name="nav_header_margin">176dp</dimen>
+<dimen name="margin_one_hundred_thirty_two">132dp</dimen>
+<dimen name="margin_two_hundred">200dp</dimen>
+<dimen name="listing_row_width">132dp</dimen>
+<dimen name="listing_row_width_quiz">132dp</dimen>
+<dimen name="margin_one_fifity">150dp</dimen>
+
+<dimen name="onehundred_fourty_eight">148dp</dimen>
+<dimen name="margin_one_hundred_thirty">130dp</dimen>
+
+<dimen name="form_doc_attach_size">24dp</dimen>
+<dimen name="spinner_height">40dp</dimen>
+
+
+
+
+<dimen name="default_padding">14dp</dimen>
+<dimen name="default_margin">14dp</dimen>
+<dimen name="card_corner_radius">18dp</dimen>
+<dimen name="card_elevation">5dp</dimen>
+<dimen name="card_height">100dp</dimen>
+<dimen name="card_height_large">150dp</dimen>
+<dimen name="icon_size_small">12dp</dimen>
+<dimen name="icon_size_medium">16dp</dimen>
+<dimen name="icon_size_large">22dp</dimen>
+<dimen name="text_size_small">13sp</dimen>
+<dimen name="text_size_medium">15sp</dimen>
+<dimen name="text_size_large">19sp</dimen>
+<dimen name="text_size_extra_large">23sp</dimen>
 </resources>

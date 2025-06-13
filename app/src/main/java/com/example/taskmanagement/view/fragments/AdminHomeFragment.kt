@@ -1,17 +1,18 @@
 package com.example.taskmanagement.view.fragments
 
+import android.app.Activity
 import android.app.Activity.RESULT_OK
+import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
+
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -21,12 +22,15 @@ import com.example.taskmanagement.MyApplication
 import com.example.taskmanagement.R
 import com.example.taskmanagement.businesslogic.interactors.GeneralItemListener
 import com.example.taskmanagement.businesslogic.interactors.GeneralListener
+import com.example.taskmanagement.businesslogic.model.PojoDialogSearch
 import com.example.taskmanagement.businesslogic.model.Status
 import com.example.taskmanagement.businesslogic.model.TaskModel
 import com.example.taskmanagement.businesslogic.viewmodel.AdminViewModel
 import com.example.taskmanagement.databinding.FragmentAdminHomeBinding
 import com.example.taskmanagement.utils.ExportToExcel
+import com.example.taskmanagement.utils.Utils
 import com.example.taskmanagement.view.adapter.TaskAdapter
+import com.example.taskmanagement.view.dialogsearchselect.AlertDialogSearch
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 
 
@@ -40,6 +44,10 @@ class AdminHomeFragment : FragmentBase() {
     private var userIds: List<String?> = listOf()
     private var workbook: XSSFWorkbook? = null
     private lateinit var pendingIntent: Intent
+    private var alertDialogSearch: AlertDialogSearch? = null
+
+    private lateinit var pojoSearchSelect: PojoDialogSearch
+    private var dialogFlag = 1
 
     private val exportLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -50,11 +58,6 @@ class AdminHomeFragment : FragmentBase() {
             }
         }
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,13 +73,35 @@ class AdminHomeFragment : FragmentBase() {
         mViewModel = AdminViewModel(requireActivity().applicationContext as MyApplication)
         mBinding.viewModel = mViewModel
         mBinding.generalListener = generalListener
+//        mBinding.spinnerItemSelectedListener = onItemSelectedListener
         mBinding.lifecycleOwner = viewLifecycleOwner
         (requireActivity() as AppCompatActivity)
             .setSupportActionBar(mBinding.topAppBar)
 
         return mBinding.root
     }
+/*    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.home_menu, menu)
+        return true
+    }
 
+    */
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+
+
+            R.id.action_logout -> {
+                showConfirmationDialog((getString(R.string.text_logout))) { dialog, which ->
+                    mViewModel.logout()
+                }
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -100,24 +125,26 @@ class AdminHomeFragment : FragmentBase() {
 
     private fun initComponents() {
         setupRecyclerView()
-        setupFilters()
-        setupMenuClicks()
+//        setupFilters()
+
     }
 
     private fun observeEvents() {
 
         mViewModel.callLogout.observe(
-            getViewLifecycleOwner(),
-            { it ->
-                mViewModel.mSharePreference?.clear()
-                mActivityMain?.navigateToLogin()
-            })
+            getViewLifecycleOwner()
+        ) { it ->
+            mViewModel.mSharePreference?.clear()
+            mActivityMain?.navigateToLogin()
+        }
 
 
 
         mViewModel.filteredTasks.observe(getViewLifecycleOwner()) { tasks ->
 //            adapter.submitList(tasks)
             Log.d("filteredTasks", "filteredTasks : $tasks")
+
+            mViewModel.observerNoRecords.set(if (tasks.isEmpty()) 2 else 1)
             adapterTask.tasks = tasks
         }
         mViewModel.allUsers.observe(getViewLifecycleOwner()) { users ->
@@ -126,26 +153,31 @@ class AdminHomeFragment : FragmentBase() {
         }
     }
 
-    private fun setupMenuClicks() {
-        mBinding.topAppBar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.action_filter -> {
-                    // toggle your filter card
-                    mBinding.filterSection.isVisible = !mBinding.filterSection.isVisible
+    /*    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+            menuInflater.inflate(R.menu.home_menu, menu)
+            return true
+        }
+
+        override fun onOptionsItemSelected(item: MenuItem): Boolean {
+            return when (item.itemId) {
+                R.id.action_add_task -> {
+                    mActivityMain?.addFragment(
+                        FragmentAdminTask(),
+                        FragmentAdminTask().javaClass.simpleName
+                    )
                     true
                 }
-
                 R.id.action_logout -> {
                     showConfirmationDialog((getString(R.string.text_logout))) { dialog, which ->
                         mViewModel.logout()
                     }
                     true
                 }
-
-                else -> false
+                else -> super.onOptionsItemSelected(item)
             }
-        }
-    }
+        }*/
+
+
 
     private fun setupRecyclerView() {
         adapterTask = TaskAdapter(emptyList(), generalItemListener)
@@ -154,25 +186,91 @@ class AdminHomeFragment : FragmentBase() {
         mBinding.recyclerView.adapter = adapterTask
     }
 
-    private fun setupFilters() {
-        mViewModel.allUsers.observe(getViewLifecycleOwner()) { users ->
-            val names = listOf("All") + users.map { it.name }
-            userIds = listOf(null) + users.map { it.uid }
+    /* private fun setupFilters() {
+         mViewModel.allUsers.observe(getViewLifecycleOwner()) { users ->
+             val names = listOf("All") + users.map { it.name }
+             userIds = listOf(null) + users.map { it.uid }
 
-            mBinding.spinnerUser.adapter = ArrayAdapter(
-                requireActivity(), android.R.layout.simple_spinner_item, names
-            ).apply {
-                setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+             mBinding.spinnerUser.adapter = ArrayAdapter(
+                 requireActivity(), android.R.layout.simple_spinner_item, names
+             ).apply {
+                 setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+             }
+         }
+
+         val statusNames = listOf("All") + Status.entries.map { it.name }
+         mBinding.spinnerStatus.adapter = ArrayAdapter(
+             requireActivity(), android.R.layout.simple_spinner_item, statusNames
+         ).apply {
+             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+         }
+
+         mBinding.spinnerUser.onItemSelectedListener = onItemSelectedListener
+         mBinding.spinnerStatus.onItemSelectedListener = onItemSelectedListener
+
+     }*/
+
+
+    private fun showSearchDialog(dialogFlagData: Int) {
+        dialogFlag = dialogFlagData
+        if (alertDialogSearch == null) {
+            alertDialogSearch =
+                AlertDialogSearch(requireActivity(), generalListener, generalFilterItemListener)
+        }
+        setUpDialogData()
+        setUpDialogTitleData()
+    }
+
+    private fun setUpDialogData() {
+        /*mViewModel.observableSearchDataList.clear();
+        for (int i = 0; i < 5; i++) {
+            mViewModel.observableSearchDataList.add(new PojoDialogSearch("item " + (i + 1), "id" + (i + 1)));
+        }*/
+    }
+
+    private fun setUpDialogTitleData() {
+        var selectedTitle: Int = R.string.text_search
+        var selectedId: String? = ""
+        if (dialogFlag == 1) {
+            selectedId = mViewModel.observableTaskAssignToUid.get()
+            selectedTitle = R.string.select_user
+        } else if (dialogFlag == 2) {
+            if (TextUtils.isEmpty(mViewModel.observableTaskStatus.get()) || mViewModel.observableTaskStatus.equals(
+                    "0"
+                )
+            ) {
+                selectedId = "0"
+            } else {
+                selectedId = mViewModel.selectedStatus.name
+            }
+            selectedTitle = R.string.select_status
+        }
+        alertDialogSearch?.setTitle(selectedTitle)
+        alertDialogSearch?.showDialog(selectedId, mViewModel.observableSearchDataList)
+    }
+
+    private fun setUpTextSelection() {
+        if (pojoSearchSelect != null && !TextUtils.isEmpty(pojoSearchSelect.title)) {
+            if (dialogFlag == 1) {
+                mViewModel.observableTaskAssignToUid.set(pojoSearchSelect.id)
+                mViewModel.observableTaskAssignTo.set(pojoSearchSelect.title)
+            } else if (dialogFlag == 2) {
+                if (pojoSearchSelect.id != "0") {
+                    mViewModel.selectedStatus = Status.valueOf(pojoSearchSelect.id)
+                }
+                mViewModel.observableTaskStatus.set(pojoSearchSelect.title)
             }
         }
-
-        val statusNames = listOf("All") + Status.entries.map { it.name }
-        mBinding.spinnerStatus.adapter = ArrayAdapter(
-            requireActivity(), android.R.layout.simple_spinner_item, statusNames
-        ).apply {
-            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        }
+        changeFilterAlert()
     }
+
+    private val generalFilterItemListener: GeneralItemListener =
+        GeneralItemListener { _, position, item ->
+            if (item is PojoDialogSearch) {
+                alertDialogSearch?.onItemClick(position)
+                pojoSearchSelect = item
+            }
+        }
 
     private val generalListener: GeneralListener = GeneralListener { view ->
         when (view?.id) {
@@ -182,27 +280,42 @@ class AdminHomeFragment : FragmentBase() {
                 FragmentAdminTask().javaClass.simpleName
             )
 
-            R.id.btnApplyFilters -> {
-                val uPos = mBinding.spinnerUser.selectedItemPosition
-                val userId = userIds.getOrNull(uPos)
-                val sPos = mBinding.spinnerStatus.selectedItemPosition
-                val status = if (sPos == 0) null else Status.entries[sPos - 1].name
-                mViewModel.applyFilters(userId, status)
+            R.id.actvAssignedUser -> {
+                mViewModel.addAlertSearchItem(myApplication?.applicationContext, 1)
+                showSearchDialog(1)
             }
 
-            R.id.exportToExcel -> {
-
-                mActivity?.exportExcel(
-                    mViewModel.filteredTasks.value!!,
-                    mViewModel.allUsers.value!!
-                )
+            R.id.actvStatus -> {
+                mViewModel.addAlertSearchItem(myApplication?.applicationContext, 2)
+                showSearchDialog(2)
             }
 
-            R.id.btnLogout -> {
+            R.id.btnAlertCancel -> {
+                alertDialogSearch?.dismissDialog()
+            }
+
+            R.id.btnAlertSave -> {
+                setUpTextSelection()
+                alertDialogSearch?.dismissDialog()
+            }
+
+            /* R.id.exportToExcel -> {
+
+                 Log.d("Tag","exportToExcel : ${mViewModel.filteredTasks.value}")
+                 Log.d("Tag","exportToExcel : ${mViewModel.allUsers.value}")
+
+
+                 mActivity?.initiateExcelExport(
+                     mViewModel.filteredTasks.value!!,
+                     mViewModel.allUsers.value!!
+                 )
+             }
+ */
+           /* R.id.btnLogout -> {
                 showConfirmationDialog((getString(R.string.text_logout))) { dialog, which ->
                     mViewModel.logout()
                 }
-            }
+            }*/
         }
     }
     private val generalItemListener = GeneralItemListener { view, _, item ->
@@ -229,9 +342,75 @@ class AdminHomeFragment : FragmentBase() {
                     )
                 }
 
+                R.id.imageview_share -> {
+                    val user =
+                        mViewModel.allUsers.value?.find { it.uid == item.assignPersonId }?.name
+                            ?: "Unknown"
+                    context?.let { ctx ->
+                        if (ctx is Activity || ctx is ContextWrapper && ctx.baseContext is Activity) {
+                            Utils().shareTaskDetails(ctx, item, user)
+
+                        } else {
+                            Utils().shareTaskDetails(ctx.applicationContext, item, user)
+                        }
+                    }
+                    /*val user = mViewModel.allUsers.value?.find { it.uid == item.assignPersonId }?.name ?: "Unknown"
+                    mActivityMain?.baseContext?.let { Utils().shareTaskDetails(it, item, user) }*/
+                }
+
 
             }
         }
+    }
+
+    private val longClickListener = GeneralItemListener { view, _, item ->
+        if (item is TaskModel) {
+            when (view?.id) {
+                R.id.cv_task_main -> {
+
+
+                }
+            }
+        }
+    }
+
+
+    /*private val onItemSelectedListener: AdapterView.OnItemSelectedListener =
+        object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(adapterView: AdapterView<*>, view: View?, i: Int, l: Long) {
+                if (adapterView.id == R.id.spinnerUser) {
+                  changeFilter()
+                } else if (adapterView.id == R.id.spinnerStatus) {
+                    changeFilter()
+                }
+            }
+
+            override fun onNothingSelected(adapterView: AdapterView<*>?) {
+            }
+        }
+*/
+    /* fun changeFilter(){
+         val uPos = mBinding.spinnerUser.selectedItemPosition
+         val userId = userIds.getOrNull(uPos)
+         val sPos = mBinding.spinnerStatus.selectedItemPosition
+         val status = if (sPos == 0) null else Status.entries[sPos - 1].name
+         Log.d("Tag","changeFilter userId : $userId status : $status ")
+         mViewModel.applyFilters(userId, status)
+     }*/
+
+    fun changeFilterAlert() {
+        Log.d("Tag", "observableTaskAssignToUid")
+        val userId = if (mViewModel.observableTaskAssignToUid.get() == "0") {
+            null
+        } else mViewModel.observableTaskAssignToUid.get()
+//        val sPos = mViewModel.observableTaskStatus
+        val sPos = mViewModel.observableTaskStatus.get()
+        val status =
+            if (sPos.equals("") || sPos.equals(myApplication?.applicationContext?.getString(R.string.text_all))) null else mViewModel.selectedStatus.name
+
+        Log.d("Tag", "changeFilterAlert sPos : $sPos ")
+        Log.d("Tag", "changeFilterAlert userId : $userId status : $status ")
+        mViewModel.applyFilters(userId, status)
     }
 
     companion object {
@@ -239,7 +418,3 @@ class AdminHomeFragment : FragmentBase() {
 
     }
 }
-
-
-
-

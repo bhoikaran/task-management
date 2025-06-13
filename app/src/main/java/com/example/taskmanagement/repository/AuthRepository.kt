@@ -1,10 +1,14 @@
 package com.example.taskmanagement.repository
 
+import android.app.Activity
+import android.widget.Toast
 import com.example.taskmanagement.businesslogic.model.UserModel
+import com.google.api.Context
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import java.util.UUID
 
 class AuthRepository {
 
@@ -57,6 +61,31 @@ class AuthRepository {
             ?: throw Exception("Auth login succeeded but user is null")
     }
 
+    suspend fun createSession(email: String, password: String): FirebaseUser {
+        val result = auth
+            .signInWithEmailAndPassword(email, password)
+            .await()
+        return result.user
+            ?: throw Exception("Auth login succeeded but user is null")
+    }
+
+
+    fun sendPasswordResetEmail(activity: Activity, email: String): Boolean {
+        auth.sendPasswordResetEmail(email)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(activity, "Reset link sent to your email", Toast.LENGTH_LONG)
+                        .show()
+
+                } else {
+                    Toast.makeText(activity, "Error: ${task.exception?.message}", Toast.LENGTH_LONG)
+                        .show()
+
+                }
+            }
+        return false
+    }
+
     /**
      * Fetch the Firestore user record for the currently logged-in UID.
      * @throws if no document exists or conversion fails.
@@ -64,14 +93,26 @@ class AuthRepository {
     suspend fun fetchCurrentUser(): UserModel {
         val uid = auth.currentUser?.uid
             ?: throw Exception("No user is currently signed in")
-        val snapshot = usersCol.document(uid).get().await()
-        if (!snapshot.exists()) {
-            throw Exception("User document not found for UID: $uid")
+        val newSessionId = UUID.randomUUID().toString()
+        var newSession = false
+
+        usersCol.document(uid).update("sessionId", newSessionId)
+            .addOnSuccessListener {
+                newSession = true
+            }
+            .await()
+        if (newSession) {
+            val snapshot = usersCol.document(uid).get().await()
+            if (!snapshot.exists()) {
+                throw Exception("User not Found.")
+            }
+            // read into model and ensure uid is set
+            val u = snapshot.toObject(UserModel::class.java)
+                ?: throw Exception("Something Went Wrong.")
+            return u.copy(uid = snapshot.id)
+
         }
-        // read into model and ensure uid is set
-        val u = snapshot.toObject(UserModel::class.java)
-            ?: throw Exception("Failed to parse user document")
-        return u.copy(uid = snapshot.id)
+        throw Exception("Something Went Wrong.")
     }
 
     /**
@@ -79,6 +120,7 @@ class AuthRepository {
      */
     suspend fun loginAndFetch(email: String, password: String): UserModel {
         val user = login(email, password)
+
         return fetchCurrentUser()
     }
 

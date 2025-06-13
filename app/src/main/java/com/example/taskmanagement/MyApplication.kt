@@ -5,11 +5,9 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.bumptech.glide.load.MultiTransformation
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
+import com.example.taskmanagement.utils.SessionManager
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
 
 
 class MyApplication : Application() {
@@ -18,6 +16,11 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        FirebaseApp.initializeApp(this)
+
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            SessionManager.initSessionListener(this)
+        }
         localBroadcastManager = LocalBroadcastManager.getInstance(this)
     }
 
@@ -30,24 +33,6 @@ class MyApplication : Application() {
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
         return activeNetwork?.isConnected == true
-    }
-
-    fun glideBaseOptions(drawable: Int): RequestOptions {
-        return RequestOptions()
-            .placeholder(drawable)
-            .error(drawable)
-            .dontAnimate()
-            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-    }
-
-    fun glideCenterCropOptions(drawable: Int): RequestOptions {
-        return glideBaseOptions(drawable).centerCrop()
-    }
-
-    fun glideOptionRoundCorner(radius: Int, placeholder: Int): RequestOptions {
-        return glideCenterCropOptions(placeholder)
-            .transform(MultiTransformation(CenterCrop(), RoundedCorners(radius)))
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
     }
 
 

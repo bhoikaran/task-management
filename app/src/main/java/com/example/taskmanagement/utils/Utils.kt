@@ -3,8 +3,11 @@ package com.example.taskmanagement.utils
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
+import android.util.Patterns
 import androidx.appcompat.app.AlertDialog
 import com.example.taskmanagement.R
+import com.example.taskmanagement.businesslogic.model.TaskModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -35,7 +38,9 @@ class Utils {
               .setNegativeButton("No", null)
               .show()
       }*/
-
+    fun isValidEmail(email: String): Boolean {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
 
     fun openDatePicker(
         context: Context,
@@ -68,6 +73,28 @@ class Utils {
         return SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(millis))
     }
 
+    // Shares as plain text in message body
+    fun shareTaskDetails(context: Context, task: TaskModel, assigneeName: String) {
+        val shareText = """
+        📝 Task Details
+        
+        🏷️ Title: ${task.title}
+        📄 Description: ${task.taskDetail}
+        👤 Assigned To: $assigneeName
+        📅 Assigned Date: ${Utils().formatDate(task.assignDate)}
+        ✅ Completion Date: ${task.completionDate?.let { Utils().formatDate(it) } ?: "Not completed"}
+        🚦 Status: ${task.status.name.replace("_", " ").lowercase()
+            .replaceFirstChar { it.uppercase() }}
+        💬 Remarks: ${task.remark ?: "None"}
+        💬 User Remarks: ${task.userRemark ?: "None"}
+    """.trimIndent()
 
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, "Task: ${task.title}")
+            putExtra(Intent.EXTRA_TEXT, shareText)
+        }
+        context.startActivity(Intent.createChooser(shareIntent, "Share Task Details"))
+    }
 
 }
